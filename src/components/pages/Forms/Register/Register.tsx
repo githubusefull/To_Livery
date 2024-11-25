@@ -1,186 +1,180 @@
 import React, { useState } from "react";
+import { SafeAreaView, StyleSheet, View } from "react-native";
+import { TextInput, Button, Text } from "react-native-paper";
+import { Picker } from "@react-native-picker/picker";
 
-import {
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  Image,
-} from "react-native";
-
-const RegisterPage = ({ navigation }: { navigation: any }) => {
+const AuthForm = () => {
   const [fullName, setFullName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [address, setAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [role, setRole] = useState("User");
+  const [isRegistering, setIsRegistering] = useState(false); // Toggle between Login and Register
 
-  const handleRegister = () => {
-    // Handle register logic here (e.g., API call)
-    console.log("Registering with", fullName, phoneNumber, email, password);
+  const handleLoginSubmit = () => {
+    console.log("Login", { email, phoneNumber });
+    setEmail("");
+    setPhoneNumber("");
   };
 
-  const handleLoginRedirect = () => {
-    // Redirect to the login page if the user already has an account
-    navigation.navigate("Login");
+  const handleRegisterSubmit = () => {
+    console.log("Register", { fullName, email, address, phoneNumber, role });
+    setFullName("");
+    setEmail("");
+    setAddress("");
+    setPhoneNumber("");
+    setRole("User");
+  };
+
+  const handleGoogleRegister = () => {
+    console.log("Register with Google");
+    // You would integrate Google authentication SDK here (e.g., Firebase, OAuth)
   };
 
   return (
     <SafeAreaView style={styles.root}>
-      <View style={styles.contentStyle}>
-        <Text style={styles.titleStyle}>Create Account</Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>{isRegistering ? "Register" : "Login"}</Text>
 
+        {/* Full Name (only for Register) */}
+        {isRegistering && (
+          <TextInput
+            label="Full Name"
+            mode="outlined"
+            value={fullName}
+            onChangeText={setFullName}
+            style={styles.input}
+          />
+        )}
+
+        {/* Email */}
         <TextInput
-          style={styles.textInputStyle}
-          placeholder="Full Name"
-          value={fullName}
-          onChangeText={setFullName}
-        />
-        <TextInput
-          style={styles.textInputStyle}
-          placeholder="Phone Number"
-          keyboardType="phone-pad"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-        />
-        <TextInput
-          style={styles.textInputStyle}
-          placeholder="Email"
+          label="Email"
+          mode="outlined"
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
+          style={styles.input}
         />
+
+        {/* Address (only for Register) */}
+        {isRegistering && (
+          <TextInput
+            label="Address"
+            mode="outlined"
+            value={address}
+            onChangeText={setAddress}
+            style={styles.input}
+          />
+        )}
+
+        {/* Phone Number */}
         <TextInput
-          style={styles.textInputStyle}
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
+          label="Phone Number"
+          mode="outlined"
+          keyboardType="phone-pad"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+          style={styles.input}
         />
 
-        <Pressable style={styles.buttonStyle} onPress={handleRegister}>
-          <Text style={styles.buttonTextStyle}>Register</Text>
-        </Pressable>
+        {/* Role Selector (only for Register) */}
+        {isRegistering && (
+          <View style={styles.pickerContainer}>
+            <Text style={styles.label}>Role</Text>
+            <Picker
+              selectedValue={role}
+              onValueChange={(itemValue) => setRole(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="User" value="User" />
+              <Picker.Item label="Admin" value="Admin" />
+            </Picker>
+          </View>
+        )}
 
-        <Pressable style={styles.googleButtonStyle}>
-  <View style={styles.buttonContent}>
-    <Text style={styles.googleButtonText}>
-      Register with Google
-    </Text>
-    <Image 
-      source={require('../../../../../assets/google.png')} 
-      style={{ width: 24, height: 24 }} // Adjust margin for spacing
-    />
-  </View>
-</Pressable>
+        {/* Submit Button */}
+        <Button
+          mode="contained"
+          onPress={isRegistering ? handleRegisterSubmit : handleLoginSubmit}
+          style={styles.submitButton}
+        >
+          {isRegistering ? "Register" : "Login"}
+        </Button>
 
+        {/* Toggle between Login and Register */}
+        <Button
+          mode="text"
+          onPress={() => setIsRegistering(!isRegistering)}
+          style={styles.toggleButton}
+        >
+          {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
+        </Button>
 
-        <View style={styles.footer}>
-          <Text style={styles.descStyle}>
-            Already have an account?{" "}
-            <Pressable onPress={handleLoginRedirect}>
-              <Text style={styles.linkStyle}>Login</Text>
-            </Pressable>
-          </Text>
-        </View>
+        {/* Google Register Button */}
+        {isRegistering && (
+          <Button
+            mode="outlined"
+            onPress={handleGoogleRegister}
+            style={styles.googleButton}
+          >
+            Register with Google
+          </Button>
+        )}
       </View>
     </SafeAreaView>
   );
 };
 
-export default RegisterPage;
+export default AuthForm;
 
 const styles = StyleSheet.create({
   root: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
+    flex: 1,
     justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
   },
-  contentStyle: {
-    paddingTop: 40,
-    paddingHorizontal: 40,
-    display: "flex",
-    gap: 15,
-    width: "80%",
+  content: {
+    width: "100%",
+    maxWidth: 400,
+    paddingHorizontal: 16,
+    marginTop: 50
+
   },
-  textInputStyle: {
-    height: 40,
-    borderBottomWidth: 0.9,
-    borderBottomColor: "#A092E3",
-    paddingHorizontal: 10,
-    letterSpacing: 1.2,
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
   },
-  buttonStyle: {
-    height: 38,
-    backgroundColor:"#A092E3",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 4,
+  input: {
+    marginBottom: 16,
+  },
+  pickerContainer: {
+    marginBottom: 16,
+  },
+  label: {
     marginBottom: 8,
-  },
-  titleStyle: {
-    color: "#000",
-    fontSize: 20,
-    fontWeight: "500",
-    fontFamily: "Roboto-Bold",
-    letterSpacing: 0.3,
-    textAlign: "center",
-    marginBottom: 30,
-  },
-  descStyle: {
-    color: "#000",
-    fontSize: 13,
-    fontWeight: "400",
-    textAlign: "center",
-    paddingVertical: 18,
-  },
-  linkStyle: {
-    color: "#0C42CC",
-    fontSize: 13,
-    fontWeight: "400",
-  },
-  
-  buttonTextStyle: {
-    color: "#fff",
     fontSize: 14,
-    fontWeight: "400",
+    fontWeight: "700",
   },
-
-  
-  googleButtonTextStyle: {
-    color: "#fff",
-    fontWeight: "200",
-    marginLeft: 4,
+  picker: {
+    backgroundColor: "#f0f0f0",
+    borderRadius: 4,
+    height: 60,
   },
-
-
-
-
-
-  googleButtonStyle: {
-    alignItems: 'center',
-    backgroundColor:"#A092E3",
-    borderRadius: 5,
-    padding: 8,
-
-    marginTop: 2,
+  submitButton: {
+    marginTop: 16,
+    borderRadius: 4,
   },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12
+  toggleButton: {
+    marginTop: 12,
   },
-  googleButtonText: {
-    fontSize: 14,
-    
-    color: '#ffffff', // White text
-  },
- 
-  footer: {
-    marginTop: 20,
+  googleButton: {
+    marginTop: 12,
+    borderRadius: 4,
+
+
   },
 });

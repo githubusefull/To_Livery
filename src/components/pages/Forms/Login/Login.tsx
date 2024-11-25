@@ -1,144 +1,119 @@
 import React, { useState } from "react";
-import {
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-} from "react-native";
+import { Pressable, SafeAreaView, StyleSheet, View } from "react-native";
+import { TextInput, Button, Text } from "react-native-paper";
+import { Picker } from "@react-native-picker/picker";
 
-const LoginPage = ({ navigation }: { navigation: any }) => {
+
+  const LoginForm = ({ navigation }: { navigation: any }) => {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("User");
 
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log("Logging in with", email, password);
+  const handleLoginSubmit = () => {
+    console.log({ email, password, role });
+
+    // Reset form after submission
+    setEmail("");
+    setPassword("");
+    setRole("User");
   };
 
-  const handleCreateAccount = () => {
-    // Navigate to the registration screen
-    navigation.navigate("Register"); // Assuming you have a Register screen
-  };
+ 
 
-  const hanldeCards  = () => {
-    // Navigate to the registration screen
-    navigation.navigate("CreateOrderForm"); // Assuming you have a Register screen
-  };
 
   return (
     <SafeAreaView style={styles.root}>
-      <View style={styles.contentStyle}>
-        <Text style={styles.titleStyle}>Login</Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>Login</Text>
 
+        {/* Email */}
         <TextInput
-          style={styles.textInputStyle}
-          placeholder="Email"
+          label="Email"
+          mode="outlined"
+          keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
+          style={styles.input}
         />
+
+        {/* Password */}
         <TextInput
-          style={styles.textInputStyle}
-          placeholder="Password"
+          label="Password"
+          mode="outlined"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          style={styles.input}
         />
 
-        <Pressable style={styles.buttonStyle} onPress={handleLogin}>
-          <Text style={styles.buttonTextStyle}>Login</Text>
-        </Pressable>
-
-        <View style={styles.footer}>
-          <Text style={styles.descStyle}>
-            Don't have an account?{" "}
-            <Pressable onPress={handleCreateAccount}>
-              <Text style={styles.linkStyle}>Register</Text>
-            </Pressable>
-
-          
-          </Text>
-
-          <View style={styles.footer}>
-
-<Pressable onPress={hanldeCards}>
-  <Text style={styles.linkStyle}>Cards</Text>
-</Pressable>
-</View>
+        {/* Role Selector */}
+        <View style={styles.pickerContainer}>
+          <Text style={styles.label}>Role</Text>
+          <Picker
+            selectedValue={role}
+            onValueChange={(itemValue) => setRole(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="User" value="User" />
+            <Picker.Item label="Admin" value="Admin" />
+          </Picker>
         </View>
+
+        {/* Submit Button */}
+
+        
+
+        <Button
+          mode="contained"
+          onPress={handleLoginSubmit}
+          style={styles.submitButton}
+        >
+          Login
+        </Button>
       </View>
     </SafeAreaView>
   );
 };
 
-export default LoginPage;
+export default LoginForm;
 
 const styles = StyleSheet.create({
   root: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  content: {
     width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    maxWidth: 400,
+    paddingHorizontal: 16,
   },
-  contentStyle: {
-    paddingTop: 40,
-    paddingHorizontal: 40,
-    display: "flex",
-    gap: 15,
-    width: "80%",
-  },
-  inputViewStyle: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-  textInputStyle: {
-    height: 40,
-    borderBottomWidth: 0.9,
-    borderBottomColor: "#A092E3",
-    paddingHorizontal: 10,
-    letterSpacing: 1.2,
-    marginBottom: 20,
-  },
-  buttonStyle: {
-    height: 38,
-    backgroundColor:"#A092E3",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 4,
-    marginBottom: 20,
-  },
-  titleStyle: {
-    color: "#000",
+  title: {
     fontSize: 20,
-    fontWeight: "500",
-    fontFamily: "Roboto-Bold",
-    letterSpacing: 0.3,
+    fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: 20,
   },
-  descStyle: {
-    color: "#000",
-    fontSize: 13,
-    fontWeight: "400",
-    textAlign: "center",
-    paddingVertical: 18,
-
+  input: {
+    marginBottom: 16,
   },
-  linkStyle: {
-    color: "#0C42CC",
-    fontSize: 13,
-    fontWeight: "400",
+  pickerContainer: {
+    marginBottom: 16,
   },
-  buttonTextStyle: {
-    color: "#fff",
+  label: {
+    marginBottom: 8,
     fontSize: 14,
-    fontWeight: "400",
+    fontWeight: "700",
   },
-  footer: {
-    marginTop: 20,
+  picker: {
+    backgroundColor: "#f0f0f0",
+    borderRadius: 4,
+    height: 60,
+  },
+  submitButton: {
+    marginTop: 16,
+    borderRadius: 4,
   },
 });

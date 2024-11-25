@@ -1,156 +1,168 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button,  StyleSheet, Pressable } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, { useState } from "react";
+import { SafeAreaView, StyleSheet, View } from "react-native";
+import { TextInput, Button, Text } from "react-native-paper";
+import { Picker } from "@react-native-picker/picker";
 
 const OrderForm = () => {
-  // State to manage form data
-  const [customerName, setCustomerName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [boxType, setBoxType] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const [address, setAddress] = useState('');
-  const [deliveryDate, setDeliveryDate] = useState('');
-  const [specialInstructions, setSpecialInstructions] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [boxType, setBoxType] = useState("Small");
+  const [city, setCity] = useState("Select a city");
 
-  // Handle form submission
-  const handleSubmit = () => {
-    const orderData = {
-      customerName,
-      phoneNumber,
-      boxType,
-      quantity,
-      address,
-      deliveryDate,
-      specialInstructions,
-    };
-    
-    // Replace this with your order submission logic, e.g., API call
-    console.log('New order submitted:', orderData);
-    
-    // Clear form
-    setCustomerName('');
-    setPhoneNumber('');
-    setBoxType('');
-    setQuantity(1);
-    setAddress('');
-    setDeliveryDate('');
-    setSpecialInstructions('');
+  const handleOrderSubmit = () => {
+    console.log({ fullName, phoneNumber, address, quantity, boxType, city });
+
+    setFullName("");
+    setPhoneNumber("");
+    setAddress("");
+    setQuantity("");
+    setBoxType("Small");
+    setCity("Select a city");
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create New Order</Text>
+    <SafeAreaView style={styles.root}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Place Your Order</Text>
 
-      <Text>Customer Name:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter name"
-        value={customerName}
-        onChangeText={setCustomerName}
-      />
+        {/* Full Name */}
+        <TextInput
+          label="Full Name"
+          mode="outlined"
+          value={fullName}
+          onChangeText={setFullName}
+          style={styles.input}
+        />
 
-      <Text>Phone Number:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter phone number"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        keyboardType="phone-pad"
-      />
+     
 
-      <Text>Box Type:</Text>
-      <Picker
-        selectedValue={boxType}
-        style={styles.picker}
-        onValueChange={setBoxType}
-      >
-        <Picker.Item label="Small Box" value="small" />
-        <Picker.Item label="Medium Box" value="medium" />
-        <Picker.Item label="Large Box" value="large" />
-      </Picker>
+        {/* Phone Number */}
+        <TextInput
+          label="Phone Number"
+          mode="outlined"
+          keyboardType="phone-pad"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+          style={styles.input}
+        />
+        <TextInput
+          label="Address"
+          mode="outlined"
+          keyboardType="phone-pad"
+          value={address}
+          onChangeText={setAddress}
+          style={styles.input}
+        />
 
-      <Text>Quantity:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter quantity"
-        value={String(quantity)}
-        onChangeText={(text) => setQuantity(Number(text))}
-        keyboardType="numeric"
-      />
+        {/* Quantity */}
+        <TextInput
+          label="Quantity"
+          mode="outlined"
+          keyboardType="numeric"
+          value={quantity}
+          onChangeText={setQuantity}
+          style={styles.input}
+        />
 
-      <Text>Delivery Address:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter delivery address"
-        value={address}
-        onChangeText={setAddress}
-      />
+        {/* Box Type Selector */}
+        <View style={styles.pickerContainer}>
+          <Text style={styles.label}>Box Type</Text>
+          <Picker
+            selectedValue={boxType}
+            onValueChange={(itemValue) => setBoxType(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Small" value="Small" />
+            <Picker.Item label="Medium" value="Medium" />
+            <Picker.Item label="Large" value="Large" />
+          </Picker>
+        </View>
 
-      <Text>Delivery Date:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter delivery date (YYYY-MM-DD)"
-        value={deliveryDate}
-        onChangeText={setDeliveryDate}
-      />
-
-      <Text>Special Instructions:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Any special instructions?"
-        value={specialInstructions}
-        onChangeText={setSpecialInstructions}
-        multiline
-      />
-
-
-
-      <Pressable style={styles.buttonStyle} onPress={handleSubmit}>
-          <Text style={styles.buttonTextStyle}>Submit Order</Text>
-        </Pressable>
-    </View>
+        {/* City Selector */}
+        <View style={styles.pickerContainer}>
+          <Text style={styles.label}>From</Text>
+          <Picker
+            selectedValue={city}
+            onValueChange={(itemValue) => setCity(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select a city" value="Select a city" />
+            <Picker.Item label="New York" value="New York" />
+            <Picker.Item label="Los Angeles" value="Los Angeles" />
+            <Picker.Item label="Chicago" value="Chicago" />
+          </Picker>
+        </View>
+        <View style={styles.pickerContainer}>
+          <Text style={styles.label}>To</Text>
+          <Picker
+            selectedValue={city}
+            onValueChange={(itemValue) => setCity(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select a city" value="Select a city" />
+            <Picker.Item label="New York" value="New York" />
+            <Picker.Item label="Los Angeles" value="Los Angeles" />
+            <Picker.Item label="Chicago" value="Chicago" />
+          </Picker>
+        </View>
+        {/* Submit Button */}
+        <Button
+          mode="contained"
+          onPress={handleOrderSubmit}
+          style={styles.submitButton}
+        >
+          Submit Order
+        </Button>
+      </View>
+    </SafeAreaView>
   );
 };
 
+export default OrderForm;
+
 const styles = StyleSheet.create({
-  buttonStyle: {
-    height: 38,
-    backgroundColor:"#A092E3",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 4,
-    marginBottom: 20,
-  },
-  buttonTextStyle: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "400",
-  },
-  container: {
-    padding: 20,
-    backgroundColor: '#fff',
+  root: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+
+  },
+  content: {
+    width: "100%",
+    maxWidth: 400,
+    paddingHorizontal: 16,
+    height:"100%",
+    marginTop: 50
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop:30,
-    marginBottom: 10,
-    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
   },
   input: {
-    borderColor: '#A092E3',
-
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
+    marginBottom: 12,
+  },
+  pickerContainer: {
+    marginBottom: 6,
+  },
+  label: {
+    marginBottom: 2,
+    
+    fontSize: 12,
+    fontWeight: "700",
   },
   picker: {
-    height: 50,
-    width: '100%',
-    marginBottom: 15,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 4,
+    height: 60,
+  },
+  submitButton: {
+    marginTop: 16,
+    borderRadius: 4,
+
   },
 });
-
-export default OrderForm;
