@@ -1,20 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import Loading from './src/components/pages/Loading/Loading';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Login from './src/components/pages/Forms/Login/Login';
+import Signup from './src/components/pages/Forms/Register/Register';
+import RegisterPage from './src/components/pages/Forms/Register/Register';
+
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading with a timeout (e.g., API initialization, token check)
+    const timer = setTimeout(() => {
+      setIsLoading(false); // Set loading to false after 2 seconds
+    }, 2000);
+
+    return () => clearTimeout(timer); // Cleanup the timer on unmount
+  }, []);
+
+  if (isLoading) {
+    // Render the loading screen while loading
+    return <Loading />;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+
+    <NavigationContainer>
+      <Stack.Navigator>
+      <Stack.Screen  name="Login" component={Login} options={{ headerShown: false }}/>
+
+      <Stack.Screen  name="Register" component={RegisterPage} options={{ headerShown: false }}/>
+
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
