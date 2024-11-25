@@ -9,10 +9,11 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-picker/picker": "^2.9.0",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
     "@xmldom/xmldom": "^0.8.10",
-    "eas-cli": "^0.49.0",
+    "eas-cli": "^13.4.2",
     "expo": "~52.0.11",
     "expo-status-bar": "~2.0.0",
     "glob": "^9.3.5",

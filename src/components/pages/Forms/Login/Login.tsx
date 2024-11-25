@@ -24,7 +24,7 @@ const LoginPage = ({ navigation }: { navigation: any }) => {
 
   const hanldeCards  = () => {
     // Navigate to the registration screen
-    navigation.navigate("OrderCard"); // Assuming you have a Register screen
+    navigation.navigate("CreateOrderForm"); // Assuming you have a Register screen
   };
 
   return (
