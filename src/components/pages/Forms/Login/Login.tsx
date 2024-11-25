@@ -22,6 +22,11 @@ const LoginPage = ({ navigation }: { navigation: any }) => {
     navigation.navigate("Register"); // Assuming you have a Register screen
   };
 
+  const hanldeCards  = () => {
+    // Navigate to the registration screen
+    navigation.navigate("OrderCard"); // Assuming you have a Register screen
+  };
+
   return (
     <SafeAreaView style={styles.root}>
       <View style={styles.contentStyle}>
@@ -51,7 +56,16 @@ const LoginPage = ({ navigation }: { navigation: any }) => {
             <Pressable onPress={handleCreateAccount}>
               <Text style={styles.linkStyle}>Register</Text>
             </Pressable>
+
+          
           </Text>
+
+          <View style={styles.footer}>
+
+<Pressable onPress={hanldeCards}>
+  <Text style={styles.linkStyle}>Cards</Text>
+</Pressable>
+</View>
         </View>
       </View>
     </SafeAreaView>

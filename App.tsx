@@ -3,8 +3,8 @@ import Loading from './src/components/pages/Loading/Loading';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './src/components/pages/Forms/Login/Login';
-import Signup from './src/components/pages/Forms/Register/Register';
 import RegisterPage from './src/components/pages/Forms/Register/Register';
+import OrderCard from './src/components/pages/Cards/OrderCard';
 
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +34,7 @@ export default function App() {
       <Stack.Screen  name="Login" component={Login} options={{ headerShown: false }}/>
 
       <Stack.Screen  name="Register" component={RegisterPage} options={{ headerShown: false }}/>
+      <Stack.Screen name="OrderCard" component={OrderCard} />
 
       </Stack.Navigator>
     </NavigationContainer>
