@@ -34,8 +34,9 @@ export default function App() {
 
       <Stack.Screen  name="Register" component={RegisterPage} options={{ headerShown: false }}/>
       <Stack.Screen name="OrderCard" component={OrderCard} />
-      <Stack.Screen name="CreateOrderForm" component={CreateOrderForm}  options={{ headerShown: false }} />
 
+      <Stack.Screen name="CreateOrderForm" component={CreateOrderForm}  options={{ headerShown: false }} />
+   
       </Stack.Navigator>
     </NavigationContainer>
   );

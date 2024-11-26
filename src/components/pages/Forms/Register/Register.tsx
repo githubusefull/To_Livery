@@ -120,6 +120,9 @@ const AuthForm = () => {
           >
             Register with Google
           </Button>
+          
+         
+            
         )}
       </View>
     </SafeAreaView>
