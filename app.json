@@ -4,7 +4,7 @@
     "slug": "To_Livery",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/car5.png",
+    "icon": "./assets/car.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
