@@ -80,6 +80,7 @@ const OrderForm = () => {
             onValueChange={(itemValue) => setFrom(itemValue)}
             style={styles.picker}
           >
+            <Picker.Item label="From :" value="" />
             <Picker.Item label="Agdal" value="Agdal" />
             <Picker.Item label="Akkari" value="Akkari" />
             <Picker.Item label="Ambassadeurs" value="Ambassadeurs" />
@@ -107,6 +108,7 @@ const OrderForm = () => {
             onValueChange={(itemValue) => setTo(itemValue)}
             style={styles.picker}
           >
+             <Picker.Item label="To :" value="" />
             <Picker.Item label="Agdal" value="Agdal" />
             <Picker.Item label="Akkari" value="Akkari" />
             <Picker.Item label="Ambassadeurs" value="Ambassadeurs" />

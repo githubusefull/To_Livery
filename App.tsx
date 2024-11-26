@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RegisterPage from './src/components/pages/Forms/Register/Register';
 import OrderCard from './src/components/pages/Cards/OrderCard';
-import CreateOrderForm from './src/components/pages/Cards/CreateOrderForm';
+import NewOrder from './src/components/pages/Cards/CreateOrderForm';
 
 
 const Stack = createNativeStackNavigator();
@@ -32,10 +32,10 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
 
+{/*
       <Stack.Screen  name="Register" component={RegisterPage} options={{ headerShown: false }}/>
-      <Stack.Screen name="OrderCard" component={OrderCard} />
-
-      <Stack.Screen name="CreateOrderForm" component={CreateOrderForm}  options={{ headerShown: false }} />
+      <Stack.Screen name="OrderCard" component={OrderCard} />*/}
+      <Stack.Screen name="CreateOrderForm" component={NewOrder}  options={{ headerShown: true }} />
    
       </Stack.Navigator>
     </NavigationContainer>
