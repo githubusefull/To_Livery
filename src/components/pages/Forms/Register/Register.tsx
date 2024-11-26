@@ -89,6 +89,8 @@ const AuthForm = () => {
             >
               <Picker.Item label="User" value="User" />
               <Picker.Item label="Admin" value="Admin" />
+              <Picker.Item label="Driver" value="Driver" />
+
             </Picker>
           </View>
         )}
