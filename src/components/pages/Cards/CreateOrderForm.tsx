@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+
+type RootStackParamList = {
+  CreateOrderForm: undefined;
+};
 const OrderForm = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
@@ -21,14 +27,30 @@ const OrderForm = () => {
     setTo("");
   };
 
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
   return (
     <SafeAreaView style={styles.root}>
+       
+       <View style={styles.navbar}>
+        <TouchableOpacity onPress={() => navigation.goBack()} >
+
+        <MaterialIcons name="arrow-back" size={23} color="#9c4fd4" />
+
+        </TouchableOpacity>
+
+        <Text style={styles.navTitle}>New Order</Text>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("CreateOrderForm")}
+          
+        >
+        <MaterialIcons name="add" size={26} color="#9c4fd4" />
+
+        </TouchableOpacity>
+      </View>
       <View style={styles.content}>
-        <Text style={styles.title}>Place Your Order</Text>
-
-
-
-
+     
 
         {/* Phone Number */}
         <TextInput
@@ -42,7 +64,7 @@ const OrderForm = () => {
         <TextInput
           label="Address"
           mode="outlined"
-          keyboardType="phone-pad"
+          keyboardType="default"
           value={address}
           onChangeText={setAddress}
           style={styles.input}
@@ -155,18 +177,44 @@ const styles = StyleSheet.create({
   content: {
     width: "100%",
     maxWidth: 400,
-    paddingHorizontal: 16,
     height: "100%",
-    marginTop: 50
+    paddingHorizontal: 16,
+    paddingTop: 8
+    
+  },
+  navbar: {
+    height: 60,
+    backgroundColor: '#fff',
+    marginTop: 100,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 1,
+
+  },
+  navTitle: {
+    color: "#6B7280",
+    fontSize: 17,
+    fontWeight: "700",
+    flex: 1, // Ensure title is centered
+    textAlign: "center",
   },
   title: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 14,
+    fontWeight: "600",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 10,
+    marginTop: 10
   },
   input: {
     marginBottom: 12,
+    marginTop: 12
   },
   pickerContainer: {
     marginBottom: 6,

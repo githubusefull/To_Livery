@@ -2,31 +2,40 @@ import React, { useState } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
+import { useNavigation } from "@react-navigation/native";
+import type { NavigationProp } from "@react-navigation/native";
 
-const AuthForm = () => {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [role, setRole] = useState("User");
-  const [isRegistering, setIsRegistering] = useState(false); // Toggle between Login and Register
+type RootStackParamList = {
+  OrderCard: undefined; 
+};
 
-  const handleLoginSubmit = () => {
+const AuthForm: React.FC = () => {
+  const [fullName, setFullName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [role, setRole] = useState<"User" | "Admin" | "Driver">("User");
+  const [isRegistering, setIsRegistering] = useState<boolean>(false);
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const handleLoginSubmit = (): void => {
     console.log("Login", { email, phoneNumber });
     setEmail("");
     setPhoneNumber("");
   };
 
-  const handleRegisterSubmit = () => {
+  const handleRegisterSubmit = (): void => {
     console.log("Register", { fullName, email, address, phoneNumber, role });
     setFullName("");
     setEmail("");
     setAddress("");
     setPhoneNumber("");
     setRole("User");
+    navigation.navigate("OrderCard");
   };
 
-  const handleGoogleRegister = () => {
+  const handleGoogleRegister = (): void => {
     console.log("Register with Google");
     // You would integrate Google authentication SDK here (e.g., Firebase, OAuth)
   };
@@ -36,7 +45,6 @@ const AuthForm = () => {
       <View style={styles.content}>
         <Text style={styles.title}>{isRegistering ? "Register" : "Login"}</Text>
 
-        {/* Full Name (only for Register) */}
         {isRegistering && (
           <TextInput
             label="Full Name"
@@ -47,7 +55,6 @@ const AuthForm = () => {
           />
         )}
 
-        {/* Email */}
         <TextInput
           label="Email"
           mode="outlined"
@@ -57,7 +64,6 @@ const AuthForm = () => {
           style={styles.input}
         />
 
-        {/* Address (only for Register) */}
         {isRegistering && (
           <TextInput
             label="Address"
@@ -68,7 +74,6 @@ const AuthForm = () => {
           />
         )}
 
-        {/* Phone Number */}
         <TextInput
           label="Phone Number"
           mode="outlined"
@@ -78,24 +83,21 @@ const AuthForm = () => {
           style={styles.input}
         />
 
-        {/* Role Selector (only for Register) */}
         {isRegistering && (
           <View style={styles.pickerContainer}>
             <Text style={styles.label}>Role</Text>
             <Picker
               selectedValue={role}
-              onValueChange={(itemValue) => setRole(itemValue)}
+              onValueChange={(itemValue) => setRole(itemValue as "User" | "Admin" | "Driver")}
               style={styles.picker}
             >
               <Picker.Item label="User" value="User" />
               <Picker.Item label="Admin" value="Admin" />
               <Picker.Item label="Driver" value="Driver" />
-
             </Picker>
           </View>
         )}
 
-        {/* Submit Button */}
         <Button
           mode="contained"
           onPress={isRegistering ? handleRegisterSubmit : handleLoginSubmit}
@@ -104,7 +106,6 @@ const AuthForm = () => {
           {isRegistering ? "Register" : "Login"}
         </Button>
 
-        {/* Toggle between Login and Register */}
         <Button
           mode="text"
           onPress={() => setIsRegistering(!isRegistering)}
@@ -113,7 +114,6 @@ const AuthForm = () => {
           {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
         </Button>
 
-        {/* Google Register Button */}
         {isRegistering && (
           <Button
             mode="outlined"
@@ -122,9 +122,6 @@ const AuthForm = () => {
           >
             Register with Google
           </Button>
-          
-         
-            
         )}
       </View>
     </SafeAreaView>
@@ -144,8 +141,7 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
     paddingHorizontal: 16,
-    marginTop: 50
-
+    marginTop: 50,
   },
   title: {
     fontSize: 20,
@@ -179,7 +175,5 @@ const styles = StyleSheet.create({
   googleButton: {
     marginTop: 12,
     borderRadius: 4,
-
-
   },
 });
