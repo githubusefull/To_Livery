@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Pressable, Modal } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
-import DriversModal from '../Modals/DriversModal';
 
 interface Order {
   id: string;
@@ -15,7 +14,7 @@ interface OrderCardProps {
   order: Order;
 }
 
-const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
+const DriversCard: React.FC<OrderCardProps> = ({ order }) => {
   const getStatusColor = (status: string): string => {
     switch (status.toLowerCase()) {
       case 'pending':
@@ -47,41 +46,28 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
   return (
     <TouchableOpacity style={styles.card}>
-      <View style={styles.header}>
-        <Text style={[styles.status, { color: getStatusColor(order.status) }]}>
-          
-          {order.status}
-        </Text>
-        <Text style={styles.driverName}>{order.driverName ? order.driverName :
+    <View style={styles.header}>
+      <Text style={[styles.status, { color: getStatusColor(order.status) }]}>
+        {order.status}
+      </Text>
+      <Text style={styles.driverName}>
+        {order.driverName }
+         
+      </Text>
+    </View>
 
+    <Text style={styles.address}>Address: {order.address}</Text>
 
-
-
-        <>
-            <View style={styles.container}>
-
-        <Pressable style={styles.addDriver} onPress={handleOpenModal}>
-            <Text style={styles.buttonText}>Add driver</Text>
-          </Pressable>
-
-
-          <DriversModal visible={isModalOpen} onClose={handleCloseModal}>
-        <Text>Modal Content</Text>
-      </DriversModal>
-            </View>
-            </>
-        }</Text>
-      </View>
-
-      <Text style={styles.address}>Address: {order.address}</Text>
-
-      <View style={styles.footer}>
-        <Text style={styles.time}>Time: {order.time}</Text>
-        <TouchableOpacity onPress={() => console.log(`Call driver for order ${order.id}`)} style={styles.phone}>
-          <FontAwesome name="phone" size={22} color="#007BFF" />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
+    <View style={styles.footer}>
+      <Text style={styles.time}>Time: {order.time}</Text>
+      <TouchableOpacity
+        onPress={() => console.log(`Call driver for order ${order.id}`)}
+        style={styles.phone}
+      >
+        <FontAwesome name="phone" size={22} color="#007BFF" />
+      </TouchableOpacity>
+    </View>
+  </TouchableOpacity>
   );
 };
 
@@ -90,6 +76,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  assignDriver: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  assignDriverText: {
+    color: "#fff",
+    fontSize: 14,
   },
   card: {
     backgroundColor: '#fff',
@@ -102,6 +98,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
+  },
+
+  buttonText: {
+    color: '#DAF7A6', // White text
+    fontSize: 12,
+    fontWeight: '500',
   },
   header: {
     flexDirection: 'row',
@@ -127,19 +129,15 @@ const styles = StyleSheet.create({
 
  
   addDriver: {
-    padding: 4,
+    padding: 2,
     backgroundColor: '#9c4fd4', // Green background for the button
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingLeft: 8,
-    paddingRight: 8
+    paddingLeft: 5,
+    paddingRight: 5
   },
-  buttonText: {
-    color: '#DAF7A6', // White text
-    fontSize: 12,
-    fontWeight: '500',
-  },
+ 
   driverName: {
     fontSize: 14,
     color:'#454545',
@@ -187,4 +185,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderCard;
+export default DriversCard;
