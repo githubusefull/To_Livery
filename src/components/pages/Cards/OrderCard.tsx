@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import OrderTosee from './OrderTosee';
 import { useNavigation } from '@react-navigation/native';
 import { Text } from 'react-native-paper';
@@ -24,13 +24,17 @@ type RootStackParamList = {
 
 // Sample order data
 const orderData: Order[] = [
-  { id: '1', address: '123 hay riad number 123 rabat', status: 'Pending', time: '12:00 PM', driverName: 'aziz'  },
+  { id: '1', address: '123 hay riad number 123 rabat', status: 'Unassigned', time: '12:00 PM', driverName: ''  },
   { id: '2', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM', driverName: ''  },
   { id: '3', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM' , driverName: 'swed' },
   { id: '4', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'moad'  },
   { id: '5', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM', driverName: 'hader'  },
   { id: '6', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM', driverName: 'walid'  },
   { id: '7', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'mohamed'  },
+  { id: '8', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'mohamed'  },
+  { id: '9', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'mohamed'  },
+  { id: '10', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'mohamed'  },
+  { id: '11', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'ghali'  },
 
 ];
 
@@ -59,7 +63,7 @@ export default function OrderCard() {
 
 
 
-        <View>
+        <View  style={styles.flatList}>
 
           <FlatList
             data={orderData}
@@ -82,7 +86,10 @@ const styles = StyleSheet.create({
     padding: 14,
     backgroundColor: '#f8f8f8',
   },
-
+ 
+  flatList: {
+   height: 700
+  },
   navbar: {
     height: 60,
     backgroundColor: '#fff',
