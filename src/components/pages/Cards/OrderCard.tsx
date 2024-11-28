@@ -12,6 +12,8 @@ interface Order {
   address: string;
   status: string;
   time: string;
+  driverName: string;
+
 }
 
 
@@ -22,18 +24,14 @@ type RootStackParamList = {
 
 // Sample order data
 const orderData: Order[] = [
-  { id: '1', address: '123 Main St', status: 'Pending', time: '12:00 PM' },
-  { id: '2', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM' },
-  { id: '3', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM' },
-  { id: '4', address: '123 Main St', status: 'Pending', time: '12:00 PM' },
-  { id: '5', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM' },
-  { id: '6', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM' },
-  { id: '7', address: '123 Main St', status: 'Pending', time: '12:00 PM' },
-  { id: '8', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM' },
-  { id: '9', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM' },
-  { id: '10', address: '123 Main St', status: 'Pending', time: '12:00 PM' },
-  { id: '11', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM' },
-  { id: '12', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM' },
+  { id: '1', address: '123 hay riad number 123 rabat', status: 'Pending', time: '12:00 PM', driverName: 'aziz'  },
+  { id: '2', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM', driverName: ''  },
+  { id: '3', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM' , driverName: 'swed' },
+  { id: '4', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'moad'  },
+  { id: '5', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM', driverName: 'hader'  },
+  { id: '6', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM', driverName: 'walid'  },
+  { id: '7', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'mohamed'  },
+
 ];
 
 
