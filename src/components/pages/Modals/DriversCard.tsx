@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface Order {
   id: string;
@@ -47,19 +48,23 @@ const DriversCard: React.FC<OrderCardProps> = ({ order }) => {
   return (
     <TouchableOpacity style={styles.card}>
     <View style={styles.header}>
-      <Text style={[styles.status, { color: getStatusColor(order.status) }]}>
-        {order.status}
-      </Text>
+     
       <Text style={styles.driverName}>
-        {order.driverName }
-         
+       Name: {order.driverName }
+
+        </Text>
+       <Text style={styles.status}>
+        <MaterialIcons name="directions-car" size={28}  color="#9c4fd4" />
+
       </Text>
+     
     </View>
 
-    <Text style={styles.address}>Address: {order.address}</Text>
+    <Text style={styles.address}>Phone number: {order.address}</Text>
 
     <View style={styles.footer}>
-      <Text style={styles.time}>Time: {order.time}</Text>
+    <Text style={styles.time}>Time: {order.time}</Text>
+
       <TouchableOpacity
         onPress={() => console.log(`Call driver for order ${order.id}`)}
         style={styles.phone}
@@ -92,7 +97,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 15,
     marginVertical: 8,
-
+width: 308,
     shadowColor: '#9c4fd4',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -110,7 +115,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
-    padding: 5
+    
 
   },
   phone: {

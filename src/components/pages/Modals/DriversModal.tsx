@@ -24,8 +24,8 @@ interface ModalComponentProps {
 
 // Sample order data
 const orderData: Order[] = [
-    { id: '1', address: '123 hay riad number 123 rabat', status: 'Unassigned', time: '12:00 PM', driverName: ''  },
-    { id: '2', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM', driverName: 'moha oali'  },
+    { id: '1', address: '123 hay riad number 123 ', status: 'Unassigned', time: '12:00 PM', driverName: ''  },
+    { id: '2', address: '456 Oak Ave ', status: 'In Transit', time: '12:30 PM', driverName: 'moha oali'  },
     { id: '3', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM' , driverName: 'swed' },
     { id: '4', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'moad'  },
     { id: '5', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM', driverName: 'hader'  },
