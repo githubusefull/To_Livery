@@ -85,12 +85,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#5555',
+    backgroundColor: '#2222',
+
   },
   modalContent: {
-    backgroundColor: 'white',
     padding: 10,
     borderRadius: 5,
+    backgroundColor: '#fff',
     width: 350,
     alignItems: 'center',
   },

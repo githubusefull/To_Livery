@@ -95,14 +95,14 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 5,
-    padding: 15,
+    padding: 12,
     marginVertical: 8,
-width: 308,
+width: 307,
     shadowColor: '#9c4fd4',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    elevation: 5,
+    elevation: 7,
   },
 
   buttonText: {
