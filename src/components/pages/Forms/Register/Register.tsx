@@ -1,38 +1,90 @@
-import React, { useState } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
-import { TextInput, Button, Text } from "react-native-paper";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView, ScrollView, StyleSheet, View, } from "react-native";
+import { TextInput, Button, Text, Snackbar } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import type { NavigationProp } from "@react-navigation/native";
+import Loading from "../../Loading/Loading";
 
 type RootStackParamList = {
-  OrderCard: undefined; 
+  OrderCard: undefined;
 };
 
 const AuthForm: React.FC = () => {
-  const [fullName, setFullName] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading with a timeout (e.g., API initialization, token check)
+    const timer = setTimeout(() => {
+      setIsLoading(false); // Set loading to false after 2 seconds
+    }, 5000);
+
+    return () => clearTimeout(timer); // Cleanup the timer on unmount
+  }, []);
+
+  
+
+  const [fullname, setFullname] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [address, setAddress] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [role, setRole] = useState<"User" | "Admin" | "Driver">("User");
+  const [mobile, setMobile] = useState<string>("");
+  const [role, setRole] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const handleLoginSubmit = (): void => {
-    console.log("Login", { email, phoneNumber });
+    console.log("Login", { email, mobile });
     setEmail("");
-    setPhoneNumber("");
+    setMobile("");
   };
 
-  const handleRegisterSubmit = (): void => {
-    console.log("Register", { fullName, email, address, phoneNumber, role });
-    setFullName("");
-    setEmail("");
-    setAddress("");
-    setPhoneNumber("");
-    setRole("User");
-    navigation.navigate("OrderCard");
+  const handleRegisterSubmit = async (): Promise<void> => {
+    try {
+      // Send a POST request with form data to the backend
+      const response = await fetch('https://livery-b.vercel.app/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullname,
+          email,
+          password,
+          address,
+          mobile,
+          role,
+        }),
+      });
+
+      // Check if the registration was successful
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || 'Registration failed');
+      }
+
+      // Reset form fields
+      setFullname('');
+      setEmail('');
+      setPassword('');
+      setAddress('');
+      setMobile('');
+      setRole('');
+
+      setSnackbarMessage("Registration successful!");
+      setSnackbarVisible(true);
+      setIsLoading(true)
+      navigation.navigate('OrderCard');
+    } catch (error: unknown) {
+      console.error('Error during registration:', error);
+      if (error instanceof Error) {
+        setSnackbarMessage(error.message);
+        setSnackbarVisible(true);
+      }
+    }
   };
 
   const handleGoogleRegister = (): void => {
@@ -40,17 +92,38 @@ const AuthForm: React.FC = () => {
     // You would integrate Google authentication SDK here (e.g., Firebase, OAuth)
   };
 
+  
+
+  if (isLoading) {
+    // Render the loading screen while loading
+    return <Loading />;
+  }
+
+
   return (
     <SafeAreaView style={styles.root}>
-      <View style={styles.content}>
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={Snackbar.DURATION_SHORT}
+        style={styles.snackbar}
+
+      >
+        <Text style={styles.snackText}>
+          {snackbarMessage}
+        </Text>
+
+
+      </Snackbar>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>{isRegistering ? "Register" : "Login"}</Text>
 
         {isRegistering && (
           <TextInput
             label="Full Name"
             mode="outlined"
-            value={fullName}
-            onChangeText={setFullName}
+            value={fullname}
+            onChangeText={setFullname}
             style={styles.input}
           />
         )}
@@ -61,6 +134,14 @@ const AuthForm: React.FC = () => {
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
+          style={styles.input}
+        />
+        <TextInput
+          label="Password"
+          mode="outlined"
+          secureTextEntry={true}  // Ensures the password is hidden
+          value={password}
+          onChangeText={setPassword}
           style={styles.input}
         />
 
@@ -78,8 +159,8 @@ const AuthForm: React.FC = () => {
           label="Phone Number"
           mode="outlined"
           keyboardType="phone-pad"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
+          value={mobile}
+          onChangeText={setMobile}
           style={styles.input}
         />
 
@@ -123,7 +204,9 @@ const AuthForm: React.FC = () => {
             Register with Google
           </Button>
         )}
-      </View>
+      </ScrollView >
+
+
     </SafeAreaView>
   );
 };
@@ -136,12 +219,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
+
   },
   content: {
     width: "100%",
     maxWidth: 400,
     paddingHorizontal: 16,
-    marginTop: 50,
+    paddingTop: 50
+
   },
   title: {
     fontSize: 20,
@@ -176,4 +261,17 @@ const styles = StyleSheet.create({
     marginTop: 12,
     borderRadius: 4,
   },
+
+  snackbar: {
+    borderRadius: 3,
+    marginBottom: 20,
+    zIndex: 50,
+    backgroundColor:'#555555'
+
+  },
+  snackText: {
+    color: '#fff',
+    fontSize: 13
+  }
+ 
 });
