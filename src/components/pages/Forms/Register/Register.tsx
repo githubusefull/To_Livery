@@ -113,7 +113,8 @@ const AuthForm: React.FC = () => {
       setEmail('');
       setPassword('');
   
-      setSnackbarMessage("Login successful!");
+      setSnackbarMessage("Login successful!"); 
+      setIsLoading(true)
       setSnackbarVisible(true);
       //localStorage.setItem('authToken', token); // or use AsyncStorage in React Native
 
