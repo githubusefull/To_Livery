@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/car6.png",
+        "foregroundImage": "./assets/car7.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.simomobile.To_Livery"
