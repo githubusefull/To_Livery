@@ -36,11 +36,7 @@ const AuthForm: React.FC = () => {
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const handleLoginSubmit = (): void => {
-    console.log("Login", { email, mobile });
-    setEmail("");
-    setMobile("");
-  };
+  
 
   const handleRegisterSubmit = async (): Promise<void> => {
     try {
@@ -87,6 +83,51 @@ const AuthForm: React.FC = () => {
     }
   };
 
+
+  const handleLoginSubmit = async (): Promise<void> => {
+    try {
+      // Send a POST request to authenticate the user
+      const response = await fetch('https://livery-b.vercel.app/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || 'Login failed');
+      }
+  
+      // Get the authentication token from the response (example)
+      const data = await response.json();
+      //const token = data.token;  // Assume the token is returned in the response
+  
+      // Store the token in localStorage or AsyncStorage (for React Native)
+  
+      // Reset form fields
+      setEmail('');
+      setPassword('');
+  
+      setSnackbarMessage("Login successful!");
+      setSnackbarVisible(true);
+      //localStorage.setItem('authToken', token); // or use AsyncStorage in React Native
+
+      // Navigate to the 'OrderCard' screen after successful login
+      navigation.navigate('OrderCard');
+    } catch (error: unknown) {
+      console.error('Error during login:', error);
+      if (error instanceof Error) {
+        setSnackbarMessage(error.message);
+        setSnackbarVisible(true);
+      }
+    }
+  };
+  
   const handleGoogleRegister = (): void => {
     console.log("Register with Google");
     // You would integrate Google authentication SDK here (e.g., Firebase, OAuth)
@@ -155,6 +196,9 @@ const AuthForm: React.FC = () => {
           />
         )}
 
+
+{isRegistering && (
+
         <TextInput
           label="Phone Number"
           mode="outlined"
@@ -163,6 +207,7 @@ const AuthForm: React.FC = () => {
           onChangeText={setMobile}
           style={styles.input}
         />
+      )}
 
         {isRegistering && (
           <View style={styles.pickerContainer}>
@@ -182,6 +227,8 @@ const AuthForm: React.FC = () => {
         <Button
           mode="contained"
           onPress={isRegistering ? handleRegisterSubmit : handleLoginSubmit}
+
+
           style={styles.submitButton}
         >
           {isRegistering ? "Register" : "Login"}
