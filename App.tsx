@@ -33,10 +33,10 @@ export default function App() {
       <Stack.Navigator>
 
 
+      {/*  
       <Stack.Screen  name="Register" component={RegisterPage} options={{ headerShown: false }}/>
-
+ */}
       <Stack.Screen name="OrderCard" component={OrderCard} options={{ headerShown: false }}/>
-
       <Stack.Screen name="CreateOrderForm" component={NewOrder}  options={{ headerShown: false }} />
    
       </Stack.Navigator>

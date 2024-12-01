@@ -1,37 +1,125 @@
-import React, { useState } from "react";
-import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { TextInput, Button, Text } from "react-native-paper";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { TextInput, Button, Text, Snackbar } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Loading from "../Loading/Loading";
 
 
 type RootStackParamList = {
   CreateOrderForm: undefined;
+  OrderCard: undefined;
+
 };
 const OrderForm = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
+
+  useEffect(() => {
+    // Simulate loading with a timeout (e.g., API initialization, token check)
+    const timer = setTimeout(() => {
+      setIsLoading(false); // Set loading to false after 2 seconds
+    }, 5000);
+
+    return () => clearTimeout(timer); // Cleanup the timer on unmount
+  }, []);
+
+
+  const [userId, setUserId] = useState("");
+  const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");
   const [quantity, setQuantity] = useState("");
   const [boxType, setBoxType] = useState("Small");
-  const [From, setFrom] = useState("from..");
-  const [To, setTo] = useState("to..");
-
-  const handleOrderSubmit = () => {
-    console.log({ phoneNumber, address, quantity, boxType });
-    setPhoneNumber("");
-    setAddress("");
-    setQuantity("");
-    setBoxType("Small");
-    setFrom("");
-    setTo("");
-  };
+  const [From, setFrom] = useState("");
+  const [To, setTo] = useState("");
+  const [status, setStatus] = useState("Unassigned");
+  const [driverInfo, setDriverInfo] = useState([]);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+ 
+
+
+
+  
+  const handleOrderSubmit = async (): Promise<void> => {
+    try {
+      // Send a POST request with form data to the backend
+      const response = await fetch('https://livery-b.vercel.app/order/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          mobile,
+          address,
+          quantity,
+          boxType,
+          From,
+          To,
+          status,
+          driverInfo
+        }),
+      });
+
+      // Check if the registration was successful
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || 'Registration failed');
+      }
+
+      // Reset form fields
+      setUserId('');
+      setMobile('');
+      setAddress('');
+      setBoxType('');
+      setQuantity('');
+      setFrom('');
+      setTo('');
+      setStatus('');
+      setDriverInfo([]);
+
+      setSnackbarMessage("Registration successful!");
+      setSnackbarVisible(true);
+      setIsLoading(true)
+      navigation.navigate('OrderCard');
+    } catch (error: unknown) {
+      console.error('Error during registration:', error);
+      if (error instanceof Error) {
+        setSnackbarMessage(error.message);
+        setSnackbarVisible(true);
+      }
+    }
+  };
+
+
+  if (isLoading) {
+    // Render the loading screen while loading
+    return <Loading />;
+  }
+
+
 
   return (
     <SafeAreaView style={styles.root}>
        
+       <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={Snackbar.DURATION_SHORT}
+        style={styles.snackbar}
+
+      >
+        <Text style={styles.snackText}>
+          {snackbarMessage}
+        </Text>
+
+
+      </Snackbar>
        <View style={styles.navbar}>
         <TouchableOpacity onPress={() => navigation.goBack()} >
 
@@ -49,16 +137,16 @@ const OrderForm = () => {
 
         </TouchableOpacity>
       </View>
-      <View style={styles.content}>
-     
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+
 
         {/* Phone Number */}
         <TextInput
           label="Phone Number"
           mode="outlined"
           keyboardType="phone-pad"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
+          value={mobile}
+          onChangeText={setMobile}
           style={styles.input}
         />
         <TextInput
@@ -159,7 +247,7 @@ const OrderForm = () => {
         >
           Submit Order
         </Button>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -179,13 +267,14 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     height: "100%",
     paddingHorizontal: 16,
-    paddingTop: 8
+    marginTop: 8
+    
     
   },
   navbar: {
     height: 60,
     backgroundColor: '#fff',
-    marginTop: 100,
+    marginTop: 50,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -235,4 +324,15 @@ const styles = StyleSheet.create({
     borderRadius: 4,
 
   },
+  snackbar: {
+    borderRadius: 3,
+    marginBottom: 20,
+    zIndex: 50,
+    backgroundColor:'#555555'
+
+  },
+  snackText: {
+    color: '#fff',
+    fontSize: 13
+  }
 });
