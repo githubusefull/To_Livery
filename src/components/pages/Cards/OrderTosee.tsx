@@ -63,7 +63,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
         {order.driverInfo && order.driverInfo.length > 0 ? (
           order.driverInfo.map((driver, index) => (
-            <Text key={index} style={styles.driverName}>{driver.name}--{driver.mobile}</Text>
+            <Text key={index} style={styles.driverName}>{driver.name}</Text>
           ))
         ) : (
           <View style={styles.container}>
@@ -92,10 +92,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
-    textAlign: 'center',
-
 
   },
   card: {
