@@ -3,12 +3,23 @@ import { StyleSheet, Text, View, TouchableOpacity, Pressable, Modal } from 'reac
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import DriversModal from '../Modals/DriversModal';
 
+interface DriverInfo {
+  driverId: string;
+  name: string;
+  mobile: string;
+}
+
 interface Order {
   id: string;
+  userId: string;
+  mobile: number;
   address: string;
+  quantity: string;
+  boxType: string;
+  From: string;
+  To: string;
   status: string;
-  time: string;
-  driverName: string;
+  driverInfo: DriverInfo[];
 }
 
 interface OrderCardProps {
@@ -21,17 +32,15 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
       case 'pending':
         return 'orange';
       case 'in transit':
-        return '#28a745'; 
-        case 'delivered':
-          return '#007bff';
-          case 'unassigned':
-          return '#2323';
-          default:
+        return '#28a745';
+      case 'delivered':
+        return '#007bff';
+      case 'unassigned':
+        return '#2323';
+      default:
         return 'gray';
     }
   };
-
-
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -49,34 +58,30 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
     <TouchableOpacity style={styles.card}>
       <View style={styles.header}>
         <Text style={[styles.status, { color: getStatusColor(order.status) }]}>
-          
           {order.status}
         </Text>
-        <Text style={styles.driverName}>{order.driverName ? order.driverName :
 
+        {order.driverInfo && order.driverInfo.length > 0 ? (
+          order.driverInfo.map((driver, index) => (
+            <Text key={index} style={styles.driverName}>{driver.name}--{driver.mobile}</Text>
+          ))
+        ) : (
+          <View style={styles.container}>
+            <Pressable style={styles.addDriver} onPress={handleOpenModal}>
+              <Text style={styles.buttonText}>Add driver</Text>
+            </Pressable>
 
-
-
-        <>
-            <View style={styles.container}>
-
-        <Pressable style={styles.addDriver} onPress={handleOpenModal}>
-            <Text style={styles.buttonText}>Add driver</Text>
-          </Pressable>
-
-
-          <DriversModal visible={isModalOpen} onClose={handleCloseModal}>
-        <Text>Modal Content</Text>
-      </DriversModal>
-            </View>
-            </>
-        }</Text>
+            <DriversModal visible={isModalOpen} onClose={handleCloseModal}>
+              <Text>Modal Content</Text>
+            </DriversModal>
+          </View>
+        )}
       </View>
 
       <Text style={styles.address}>Address: {order.address}</Text>
 
       <View style={styles.footer}>
-        <Text style={styles.time}>Time: {order.time}</Text>
+        <Text style={styles.time}>Time: {order.mobile}</Text>
         <TouchableOpacity onPress={() => console.log(`Call driver for order ${order.id}`)} style={styles.phone}>
           <FontAwesome name="phone" size={22} color="#007BFF" />
         </TouchableOpacity>
@@ -88,8 +93,10 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    textAlign: 'center',
+
+
   },
   card: {
     backgroundColor: '#fff',
@@ -108,69 +115,55 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
-    padding: 5
-
+    padding: 5,
   },
-  phone: {
-
-  },
+  phone: {},
   status: {
     fontWeight: 'bold',
     fontSize: 16,
   },
-  unassignedStatus:{
-    fontWeight: '600',
-    fontSize: 14,
-    
-    color:'#3434'
-  },
-
- 
   addDriver: {
     padding: 4,
-    backgroundColor: '#9c4fd4', // Green background for the button
+    backgroundColor: '#9c4fd4',
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
     paddingLeft: 8,
-    paddingRight: 8
+    paddingRight: 8,
   },
   buttonText: {
-    color: '#DAF7A6', // White text
+    color: '#DAF7A6',
     fontSize: 12,
     fontWeight: '500',
   },
   driverName: {
     fontSize: 14,
-    color:'#454545',
+    color: '#454545',
     fontWeight: '500',
     textAlign: 'center',
-    textTransform:'capitalize'
-
+    textTransform: 'capitalize',
   },
   address: {
     fontSize: 14,
     color: '#333',
     marginBottom: 10,
-  
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingLeft: 0,
-    paddingRight: 8
+    paddingRight: 8,
   },
   time: {
     fontSize: 14,
     color: '#555',
   },
-
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
     backgroundColor: 'white',
@@ -182,7 +175,7 @@ const styles = StyleSheet.create({
   closeButton: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: '#f44336', // Red background for the close button
+    backgroundColor: '#f44336',
     borderRadius: 5,
   },
 });

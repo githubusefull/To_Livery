@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { TextInput, Button, Text, Snackbar } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Loading from "../Loading/Loading";
 
 
 type RootStackParamList = {
@@ -14,18 +13,10 @@ type RootStackParamList = {
 };
 const OrderForm = () => {
 
-  const [isLoading, setIsLoading] = useState(true);
   const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
 
-  useEffect(() => {
-    // Simulate loading with a timeout (e.g., API initialization, token check)
-    const timer = setTimeout(() => {
-      setIsLoading(false); // Set loading to false after 2 seconds
-    }, 5000);
-
-    return () => clearTimeout(timer); // Cleanup the timer on unmount
-  }, []);
+ 
 
 
   const [userId, setUserId] = useState("");
@@ -69,7 +60,7 @@ const OrderForm = () => {
       // Check if the registration was successful
       if (!response.ok) {
         const errorMessage = await response.text();
-        throw new Error(errorMessage || 'Registration failed');
+        throw new Error(errorMessage || 'Order failed');
       }
 
       // Reset form fields
@@ -83,12 +74,11 @@ const OrderForm = () => {
       setStatus('');
       setDriverInfo([]);
 
-      setSnackbarMessage("Registration successful!");
+      setSnackbarMessage("Order successful!");
       setSnackbarVisible(true);
-      setIsLoading(true)
       navigation.navigate('OrderCard');
     } catch (error: unknown) {
-      console.error('Error during registration:', error);
+      console.error('Error during order:', error);
       if (error instanceof Error) {
         setSnackbarMessage(error.message);
         setSnackbarVisible(true);
@@ -97,10 +87,7 @@ const OrderForm = () => {
   };
 
 
-  if (isLoading) {
-    // Render the loading screen while loading
-    return <Loading />;
-  }
+
 
 
 
