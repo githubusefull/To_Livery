@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { TextInput, Button, Text, Snackbar } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
@@ -91,6 +91,10 @@ const OrderForm = () => {
 
 
 
+
+
+
+ 
   return (
     <SafeAreaView style={styles.root}>
        
@@ -108,11 +112,29 @@ const OrderForm = () => {
 
       </Snackbar>
        <View style={styles.navbar}>
-        <TouchableOpacity onPress={() => navigation.goBack()} >
 
-        <MaterialIcons name="arrow-back" size={23} color="#9c4fd4" />
+        
 
-        </TouchableOpacity>
+       <TouchableOpacity onPress={() => navigation.goBack()} >
+
+<MaterialIcons name="arrow-back" size={23} color="#9c4fd4" />
+
+</TouchableOpacity>
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
 
         <Text style={styles.navTitle}>New Order</Text>
 
@@ -321,5 +343,9 @@ const styles = StyleSheet.create({
   snackText: {
     color: '#fff',
     fontSize: 13
-  }
+  },
+
+
+
+
 });

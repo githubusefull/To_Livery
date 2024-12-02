@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Text } from 'react-native-paper';
 import type { NavigationProp } from "@react-navigation/native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -69,14 +70,78 @@ export default function OrderCard() {
 
     fetchOrders();
   }, []);
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleOptionSelect = (option: any) => {
+    setIsDropdownOpen(false);
+    if (option === 'goBack') {
+      navigation.goBack();
+    } else {
+      console.log('Other option selected');
+    }
+  };
+
+  
+  
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('userData');
+
+      
+      alert('Logged out successfully!');
+      setIsDropdownOpen(false)
+    } catch (error) {
+      console.error('Error during logout:', error);
+      alert('An error occurred during logout');
+    }
+  };
+
+
   return (
     <View style={styles.container} >
       <View style={styles.navbar}>
+        {/*
         <TouchableOpacity onPress={() => navigation.goBack()} >
 
         <MaterialIcons name="arrow-back" size={23} color="#9c4fd4" />
 
+        </TouchableOpacity>*/}
+
+
+
+
+        <TouchableOpacity
+        onPress={() => setIsDropdownOpen(!isDropdownOpen)}
+        style={styles.button}
+      >
+        <MaterialIcons name="menu" size={23} color="#9c4fd4" />
+      </TouchableOpacity>
+
+      {/* Dropdown menu */}
+      {isDropdownOpen && (
+        <View style={styles.dropdown}>
+          <TouchableOpacity
+            onPress={() => handleOptionSelect('goBack')}
+            style={styles.option}
+          >
+        <MaterialIcons name="arrow-back" size={23} color="#DAF7A6" />
         </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleLogout()}
+            style={styles.option}
+          >
+        <MaterialIcons name="logout" size={23} color="#DAF7A6" />
+        </TouchableOpacity>
+        </View>
+      )}
+
+
+
+
+
+
         <Text style={styles.navTitle}>Orders</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate("CreateOrderForm")}
@@ -113,7 +178,8 @@ const styles = StyleSheet.create({
   },
  
   flatList: {
-   height: 700
+   height: 700,
+   zIndex: -10
   },
   navbar: {
     height: 60,
@@ -154,5 +220,37 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+
+
+
+
+  
+  button: {
+    padding: 8,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 50, // Adjust this value to position the dropdown
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    zIndex: 20, // Ensure the dropdown is above other elements
+marginLeft: 3,
+    padding: 4,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+  },
+  option: {
+    padding: 9,
+    backgroundColor: '#9c4fd4',
+    borderRadius: 3,
+    margin:1
+
+  },
+  optionText: {
+    fontSize: 16,
+
   },
 });

@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+interface DriverInfo {
+  driverId: string;
+  name: string;
+  mobile: string;
+}
+
 interface Order {
   id: string;
+  userId: string;
+  mobile: number;
   address: string;
+  quantity: string;
+  boxType: string;
+  From: string;
+  To: string;
   status: string;
-  time: string;
-  driverName: string;
+  driverInfo: DriverInfo[];
+
 }
 
 interface OrderCardProps {
@@ -33,6 +45,7 @@ const DriversCard: React.FC<OrderCardProps> = ({ order }) => {
 
 
 
+ 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Open the modal
@@ -50,7 +63,13 @@ const DriversCard: React.FC<OrderCardProps> = ({ order }) => {
     <View style={styles.header}>
      
       <Text style={styles.driverName}>
-       Name: {order.driverName }
+       Name: {
+       
+       order.driverInfo.map((driver, index) => (
+        <Text key={index} style={styles.driverName}>{driver.name}</Text>
+      ))
+       
+       }
 
         </Text>
        <Text style={styles.status}>
@@ -60,10 +79,10 @@ const DriversCard: React.FC<OrderCardProps> = ({ order }) => {
      
     </View>
 
-    <Text style={styles.address}>Phone number: {order.address}</Text>
+    <Text style={styles.address}>Mobile: {order.mobile}</Text>
 
     <View style={styles.footer}>
-    <Text style={styles.time}>Time: {order.time}</Text>
+    <Text style={styles.time}>Time: </Text>
 
       <TouchableOpacity
         onPress={() => console.log(`Call driver for order ${order.id}`)}
@@ -114,9 +133,8 @@ width: 307,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
-    
-
+    marginBottom: 2,
+  
   },
   phone: {
 

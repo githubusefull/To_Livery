@@ -1,18 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Pressable, Modal, FlatList } from 'react-native';
 import DriversCard from './DriversCard'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 
 
+interface DriverInfo {
+  driverId: string;
+  name: string;
+  mobile: string;
+}
+
 interface Order {
-    id: string;
-    address: string;
-    status: string;
-    time: string;
-    driverName: string;
-  
-  }
+  id: string;
+  userId: string;
+  mobile: number;
+  address: string;
+  quantity: string;
+  boxType: string;
+  From: string;
+  To: string;
+  status: string;
+  driverInfo: DriverInfo[];
+
+}
 interface ModalComponentProps {
   visible: boolean;
   onClose: () => void;
@@ -23,21 +34,41 @@ interface ModalComponentProps {
 
 
 // Sample order data
-const orderData: Order[] = [
-    { id: '1', address: '123 hay riad number 123 ', status: 'Unassigned', time: '12:00 PM', driverName: ''  },
-    { id: '2', address: '456 Oak Ave ', status: 'In Transit', time: '12:30 PM', driverName: 'moha oali'  },
-    { id: '3', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM' , driverName: 'swed' },
-    { id: '4', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'moad'  },
-    { id: '5', address: '456 Oak Ave', status: 'In Transit', time: '12:30 PM', driverName: 'hader'  },
-    { id: '6', address: '789 Pine Rd', status: 'Delivered', time: '1:00 PM', driverName: 'walid'  },
-    { id: '7', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'mohamed'  },
-    { id: '8', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'mohamed'  },
-    { id: '9', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'mohamed'  },
-    { id: '10', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'mohamed'  },
-    { id: '11', address: '123 Main St', status: 'Pending', time: '12:00 PM', driverName: 'ghali'  },
-  
-  ];
+
 const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, children }) => {
+
+
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+
+
+
+
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch('https://livery-b.vercel.app/order/create');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Order[] = await response.json();
+        setOrders(data);
+      } catch (error: unknown) {
+        console.error('Error during order:', error);
+        if (error instanceof Error) {
+          alert(error.message);
+         
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   return (
     <Modal
       visible={visible}
@@ -53,9 +84,9 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, childre
           <Text style={styles.buttonText}>Assign Driver</Text>
 
 <FlatList
-  data={orderData}
+  data={orders}
   showsVerticalScrollIndicator={false}
-  keyExtractor={(item) => item.id}
+  keyExtractor={(item, index) => item.id || String(index)}  // Fallback to index if no unique 'id'
   renderItem={({ item }) => <DriversCard order={item} />}
 />
 </View>

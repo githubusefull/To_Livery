@@ -5,6 +5,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import type { NavigationProp } from "@react-navigation/native";
 import Loading from "../../Loading/Loading";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type RootStackParamList = {
   OrderCard: undefined;
@@ -22,7 +23,7 @@ const AuthForm: React.FC = () => {
     return () => clearTimeout(timer); // Cleanup the timer on unmount
   }, []);
 
-  
+
 
   const [fullname, setFullname] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -36,7 +37,7 @@ const AuthForm: React.FC = () => {
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  
+
 
   const handleRegisterSubmit = async (): Promise<void> => {
     try {
@@ -62,6 +63,12 @@ const AuthForm: React.FC = () => {
         throw new Error(errorMessage || 'Registration failed');
       }
 
+      const data = await response.json();
+
+
+      await AsyncStorage.setItem('userData', JSON.stringify(data));
+      const userData = await AsyncStorage.getItem('userData');
+      console.log('Stored User Data:', JSON.parse(userData || '{}'));
       // Reset form fields
       setFullname('');
       setEmail('');
@@ -103,13 +110,15 @@ const AuthForm: React.FC = () => {
         throw new Error(errorMessage || 'Login failed');
       }
   
-      // Get the authentication token from the response (example)
       const data = await response.json();
-      //const token = data.token;  // Assume the token is returned in the response
+      //await AsyncStorage.setItem('userToken', data.token);
+      await AsyncStorage.setItem('userData', JSON.stringify(data.user));
   
-      // Store the token in localStorage or AsyncStorage (for React Native)
-  
-      // Reset form fields
+      // Log the saved data
+      //const userToken = await AsyncStorage.getItem('userToken');
+      const userData = await AsyncStorage.getItem('userData');
+      //console.log('User Token:', userToken);
+      console.log('User Data:', JSON.parse(userData || '{}'));
       setEmail('');
       setPassword('');
   
