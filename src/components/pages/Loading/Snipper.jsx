@@ -3,8 +3,7 @@ import {
   View,
   StyleSheet,
   Animated,
-  Easing,
-  Dimensions,
+  Easing
 } from 'react-native';
 
 const Snipper = () => {

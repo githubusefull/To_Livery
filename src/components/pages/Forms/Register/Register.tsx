@@ -15,6 +15,7 @@ type RootStackParamList = {
 
 
 interface DecodedToken {
+  id: string;
   fullname: string;
   email: string;
   role: string;
@@ -26,7 +27,7 @@ const AuthForm: React.FC = () => {
     // Simulate loading with a timeout (e.g., API initialization, token check)
     const timer = setTimeout(() => {
       setIsLoading(false); // Set loading to false after 2 seconds
-    }, 5000);
+    }, 1000);
 
     return () => clearTimeout(timer); // Cleanup the timer on unmount
   }, []);
@@ -75,6 +76,7 @@ const AuthForm: React.FC = () => {
       //const data = await response.json();
 
       const user = {
+        
         fullname,
         email,
         role,
@@ -125,25 +127,19 @@ const AuthForm: React.FC = () => {
   
      
       const data = await response.json();
-      console.log('Login response data:', data);
   
       const { token } = data;
     
       const decodedToken = jwtDecode<DecodedToken>(token);
-
-      console.log('Decoded token data:', decodedToken);
   
       const user = {
+        _id: decodedToken?.id,
         fullname: decodedToken?.fullname,
         email: decodedToken?.email,
         role: decodedToken?.role,
       };
   
       await AsyncStorage.setItem('userData', JSON.stringify(user));
-
-
-
-
       setEmail('');
       setPassword('');
       setSnackbarMessage("Login successful!"); 

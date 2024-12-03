@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Alert } from 'react-native';
 import OrderTosee from './OrderTosee';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Text } from 'react-native-paper';
+import { Text, Snackbar } from 'react-native-paper';
 import type { NavigationProp } from "@react-navigation/native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -46,7 +46,8 @@ export default function OrderCard() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const dropdownRef = useRef<View | null>(null);
 
 
@@ -94,77 +95,77 @@ export default function OrderCard() {
   };
 
   
-  
+
+
+
 
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem('userData');
-
-      
-      alert('Logged out successfully!');
-      setIsDropdownOpen(false)
-      navigation.navigate('Register');
-
+      // Start loading (optional)
+      setLoading(true);
+  
+      // Confirm logout
+      Alert.alert(
+        'Logout Confirmation',
+        'Are you sure you want to log out?',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => setLoading(false) },
+          {
+            text: 'Logout',
+            style: 'destructive',
+            onPress: async () => {
+              await AsyncStorage.removeItem('userData');
+  
+              setIsDropdownOpen(false);
+              setSnackbarMessage('Logged out successfully!');
+              setSnackbarVisible(true);
+  
+              // Navigate to Register screen
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Register' }],
+              });
+            },
+          },
+        ]
+      );
     } catch (error) {
       console.error('Error during logout:', error);
-      alert('An error occurred during logout');
+      Alert.alert('Error', 'An error occurred during logout');
+    } finally {
+      // Stop loading
+      setLoading(false);
     }
   };
+ 
 
 
   
-
-
-
-
-
-  const [role, setRole] = useState<string>("");
-
-
-  useEffect(() => {
-    const fetchRoleAndOrderId = async () => {
-      try {
-        // Retrieve user data from AsyncStorage
-        const userData = await AsyncStorage.getItem('userData');
-        if (userData) {
-          const parsedData = JSON.parse(userData);
-
-          // Assuming 'role' and 'orderId' are properties of userData
-          setRole(parsedData.role || "");
-
-          console.log('Role:', parsedData.role);
-        }
-      } catch (error) {
-        console.error('Error retrieving data from AsyncStorage:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRoleAndOrderId();
-  }, []);
   
   if (loading) {
-    // Render the loading screen while loading
     return <Loading />;
   }
 
   return (
 
     <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
+ 
+    <View style={styles.container}>
+    <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={Snackbar.DURATION_SHORT}
+        style={styles.snackbar}
 
-    <View style={styles.container} >
+      >
+        <Text style={styles.snackText}>
+          {snackbarMessage}
+        </Text>
+
+
+      </Snackbar>
       <View style={styles.navbar}>
-        {/*
-        <TouchableOpacity onPress={() => navigation.goBack()} >
-
-        <MaterialIcons name="arrow-back" size={23} color="#9c4fd4" />
-
-        </TouchableOpacity>*/}
-
-
-
-
+    
         <TouchableOpacity
         onPress={() => setIsDropdownOpen(!isDropdownOpen)}
         style={styles.button}
@@ -195,7 +196,7 @@ export default function OrderCard() {
 
 
 
-        <Text style={styles.navTitle}>Orders -- role:{role}</Text>
+        <Text style={styles.navTitle}>Orders</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate("CreateOrderForm")}
           
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
   navbar: {
     height: 60,
     backgroundColor: '#fff',
-    marginTop: 30,
+    marginTop: 20,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -304,4 +305,15 @@ marginLeft: 3,
     fontSize: 16,
 
   },
+  snackbar: {
+    borderRadius: 3,
+    marginBottom: 20,
+    zIndex: 50,
+    backgroundColor:'#555555'
+
+  },
+  snackText: {
+    color: '#fff',
+    fontSize: 13
+  }
 });

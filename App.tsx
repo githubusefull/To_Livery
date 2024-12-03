@@ -14,12 +14,13 @@ export default function App() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [role, setRole] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
 
   useEffect(() => {
     // Simulate loading with a timeout (e.g., API initialization, token check)
     const timer = setTimeout(() => {
       setIsLoading(false); // Set loading to false after 2 seconds
-    }, 2000);
+    }, 1000);
 
     return () => clearTimeout(timer); // Cleanup the timer on unmount
   }, []);
@@ -37,8 +38,8 @@ export default function App() {
 
           // Assuming 'role' and 'orderId' are properties of userData
           setRole(parsedData.role || "");
+          setUserId(parsedData._id || "");
 
-          console.log('Role:', parsedData.role);
         }
       } catch (error) {
         console.error('Error retrieving data from AsyncStorage:', error);
@@ -56,9 +57,9 @@ export default function App() {
 
 
 
+console.log('userId', userId )
+console.log('role', role )
 
-
-  
 
   if (isLoading) {
     // Render the loading screen while loading

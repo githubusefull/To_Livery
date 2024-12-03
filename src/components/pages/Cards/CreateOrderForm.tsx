@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   navbar: {
     height: 60,
     backgroundColor: '#fff',
-    marginTop: 50,
+    marginTop: 20,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
