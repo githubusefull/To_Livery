@@ -6,11 +6,19 @@ import { useNavigation } from "@react-navigation/native";
 import type { NavigationProp } from "@react-navigation/native";
 import Loading from "../../Loading/Loading";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {jwtDecode} from 'jwt-decode'; // Import the jwt-decode library
+
 
 type RootStackParamList = {
   OrderCard: undefined;
 };
 
+
+interface DecodedToken {
+  fullname: string;
+  email: string;
+  role: string;
+}
 const AuthForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -57,19 +65,24 @@ const AuthForm: React.FC = () => {
         }),
       });
 
+
       // Check if the registration was successful
       if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(errorMessage || 'Registration failed');
       }
 
-      const data = await response.json();
+      //const data = await response.json();
 
+      const user = {
+        fullname,
+        email,
+        role,
+      };
+  
+      await AsyncStorage.setItem('userData', JSON.stringify(user));
+      
 
-      await AsyncStorage.setItem('userData', JSON.stringify(data));
-      const userData = await AsyncStorage.getItem('userData');
-      console.log('Stored User Data:', JSON.parse(userData || '{}'));
-      // Reset form fields
       setFullname('');
       setEmail('');
       setPassword('');
@@ -101,7 +114,7 @@ const AuthForm: React.FC = () => {
         },
         body: JSON.stringify({
           email,
-          password,
+          password
         }),
       });
   
@@ -110,24 +123,32 @@ const AuthForm: React.FC = () => {
         throw new Error(errorMessage || 'Login failed');
       }
   
+     
       const data = await response.json();
-      //await AsyncStorage.setItem('userToken', data.token);
-      await AsyncStorage.setItem('userData', JSON.stringify(data.user));
+      console.log('Login response data:', data);
   
-      // Log the saved data
-      //const userToken = await AsyncStorage.getItem('userToken');
-      const userData = await AsyncStorage.getItem('userData');
-      //console.log('User Token:', userToken);
-      console.log('User Data:', JSON.parse(userData || '{}'));
+      const { token } = data;
+    
+      const decodedToken = jwtDecode<DecodedToken>(token);
+
+      console.log('Decoded token data:', decodedToken);
+  
+      const user = {
+        fullname: decodedToken?.fullname,
+        email: decodedToken?.email,
+        role: decodedToken?.role,
+      };
+  
+      await AsyncStorage.setItem('userData', JSON.stringify(user));
+
+
+
+
       setEmail('');
       setPassword('');
-  
       setSnackbarMessage("Login successful!"); 
       setIsLoading(true)
       setSnackbarVisible(true);
-      //localStorage.setItem('authToken', token); // or use AsyncStorage in React Native
-
-      // Navigate to the 'OrderCard' screen after successful login
       navigation.navigate('OrderCard');
     } catch (error: unknown) {
       console.error('Error during login:', error);
@@ -144,6 +165,7 @@ const AuthForm: React.FC = () => {
   };
 
   
+
 
   if (isLoading) {
     // Render the loading screen while loading
@@ -173,6 +195,7 @@ const AuthForm: React.FC = () => {
           <TextInput
             label="Full Name"
             mode="outlined"
+            autoCapitalize="none" 
             value={fullname}
             onChangeText={setFullname}
             style={styles.input}
@@ -182,6 +205,7 @@ const AuthForm: React.FC = () => {
         <TextInput
           label="Email"
           mode="outlined"
+          autoCapitalize="none" 
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
@@ -190,6 +214,7 @@ const AuthForm: React.FC = () => {
         <TextInput
           label="Password"
           mode="outlined"
+          autoCapitalize="none" 
           secureTextEntry={true}  // Ensures the password is hidden
           value={password}
           onChangeText={setPassword}
