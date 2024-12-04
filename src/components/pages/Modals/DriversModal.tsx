@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Pressable, Modal, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Modal, FlatList, Alert, TouchableOpacity } from 'react-native';
 import DriversCard from './DriversCard'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 
 
@@ -10,6 +11,9 @@ interface DriverInfo {
   name: string;
   mobile: string;
 }
+type RootStackParamList = {
+  OrderCard: undefined;
+};
 
 interface Driver {
   _id: string;
@@ -52,6 +56,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
 
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
 
 
@@ -83,16 +88,54 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
 
 
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
- 
 
+
+
+     
   const handleSelectDriver = (driver: Driver) => {
     setSelectedDriver(driver);
+    setIsModalVisible(true); // Open the modal
+
+  };   
+
+
+
+  const handleSubmit = async () => {
+    
+    try {
+      const response = await fetch(
+        `https://livery-b.vercel.app/order/create/${selectedOrderId}`, // Use the correct URL
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            driverId: selectedDriver?._id,
+            name: selectedDriver?.fullname,
+            mobile: selectedDriver?.mobile,
+          }),
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error(`Failed to update order. Status: ${response.status}`);
+      }
+
+      setIsModalVisible(false)
+      Alert.alert('Successfully')
+
+      setTimeout(() => {
+        navigation.navigate('OrderCard');
+      }, 100);
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'An error occurred. Please try again.');
+    }
   };
-
-
-
-
+  
 
 
   return (
@@ -108,10 +151,47 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
 
           <View  style={styles.flatList}>
           <Text style={styles.buttonText}>Assign Driver</Text>
-          <Text>OrderId:{order._id}</Text>
-          <Text>DriverId: {selectedDriver?._id}
-         
-             </Text>
+  
+
+  {/* Confirmation Modal */}
+  <Modal
+        animationType="slide"
+        transparent
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)} // Close modal on back button
+      >
+        <View style={styles.modalOverlayCofirm}>
+          <View style={styles.modalContentConfirm}>
+            <Text style={styles.modalTitle}>Confirm Driver Selection</Text>
+            <Text style={styles.modalMessage}>
+              Are you sure you want to select{' '}
+              <Text style={styles.highlight}>
+                {selectedDriver?.fullname}
+              </Text>
+              ?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={() => setIsModalVisible(false)} // Cancel action
+              >
+                <Text style={styles.cancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.confirmButton]}
+                onPress={handleSubmit} // Confirm action
+              >
+                <Text style={styles.confirmText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+
+
+
+
 
 
 <FlatList          
@@ -139,6 +219,11 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
 };
 
 const styles = StyleSheet.create({
+  button: {
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#007bff',
+  },
     iconClose:{
   marginTop: 12
     },
@@ -189,6 +274,51 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign:'center',
     padding: 12
+  },
+
+
+  modalOverlayCofirm: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContentConfirm: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  highlight: {
+    fontWeight: 'bold',
+    color: '#007bff',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+    marginRight: 10,
+  },
+  cancelText: {
+    color: '#fff',
+  },
+  confirmButton: {
+    backgroundColor: '#28a745',
+  },
+  confirmText: {
+    color: '#fff',
   },
 });
 
