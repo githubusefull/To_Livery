@@ -4,6 +4,7 @@ import { TextInput, Button, Text, Snackbar } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 type RootStackParamList = {
@@ -15,11 +16,7 @@ const OrderForm = () => {
 
   const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>("");
-
- 
-
-
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState<string>("");
   const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -87,8 +84,19 @@ const OrderForm = () => {
   };
 
 
-
-
+  useEffect(() => {
+    (async () => {
+      try {
+        const userData = await AsyncStorage.getItem("userData");
+        if (userData) {
+          const parsedData: { _id?: string } = JSON.parse(userData);
+          setUserId(parsedData._id || "");
+        }
+      } catch (error) {
+        console.error("Error retrieving data from AsyncStorage:", error);
+      }
+    })();
+  }, []);
 
 
 

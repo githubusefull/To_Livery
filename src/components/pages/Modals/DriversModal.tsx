@@ -11,7 +11,18 @@ interface DriverInfo {
   mobile: string;
 }
 
+interface Driver {
+  _id: string;
+  id: string;
+  fullname: string;
+  email: string;
+  address: string;
+  mobile: number;
+  role: string;
+ 
+}
 interface Order {
+  _id: string;
   id: string;
   userId: string;
   mobile: number;
@@ -22,12 +33,13 @@ interface Order {
   To: string;
   status: string;
   driverInfo: DriverInfo[];
-
 }
 interface ModalComponentProps {
   visible: boolean;
   onClose: () => void;
-  children?: React.ReactNode;
+  selectedOrderId: string | null;
+  order: Order;
+
 }
 
 
@@ -35,12 +47,11 @@ interface ModalComponentProps {
 
 // Sample order data
 
-const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, children }) => {
+const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selectedOrderId, order  }) => {
 
 
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
 
 
 
@@ -49,12 +60,12 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, childre
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('https://livery-b.vercel.app/order/create');
+        const response = await fetch('https://livery-b.vercel.app/auth/register');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data: Order[] = await response.json();
-        setOrders(data);
+        const data: Driver[] = await response.json();
+        setDrivers(data);
       } catch (error: unknown) {
         console.error('Error during order:', error);
         if (error instanceof Error) {
@@ -69,6 +80,21 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, childre
     fetchOrders();
   }, []);
 
+
+
+  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
+
+ 
+
+  const handleSelectDriver = (driver: Driver) => {
+    setSelectedDriver(driver);
+  };
+
+
+
+
+
+
   return (
     <Modal
       visible={visible}
@@ -82,12 +108,19 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, childre
 
           <View  style={styles.flatList}>
           <Text style={styles.buttonText}>Assign Driver</Text>
+          <Text>OrderId:{order._id}</Text>
+          <Text>DriverId: {selectedDriver?._id}
+         
+             </Text>
 
-<FlatList
-  data={orders}
+
+<FlatList          
+
+  data={drivers}
   showsVerticalScrollIndicator={false}
-  keyExtractor={(item, index) => item.id || String(index)}  // Fallback to index if no unique 'id'
-  renderItem={({ item }) => <DriversCard order={item} />}
+  keyExtractor={(item, index) => item.id || String(index)} 
+
+  renderItem={({ item }) => <DriversCard driver={item} onPress={handleSelectDriver}/>}
 />
 </View>
 

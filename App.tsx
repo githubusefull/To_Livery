@@ -57,8 +57,8 @@ export default function App() {
 
 
 
-console.log('userId', userId )
-console.log('role', role )
+console.log('userId to', userId )
+console.log('role to ', role )
 
 
   if (isLoading) {

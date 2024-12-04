@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React  from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -9,25 +9,25 @@ interface DriverInfo {
   mobile: string;
 }
 
-interface Order {
+interface Driver {
+  _id: string;
   id: string;
-  userId: string;
-  mobile: number;
+  fullname: string;
+  email: string;
   address: string;
-  quantity: string;
-  boxType: string;
-  From: string;
-  To: string;
-  status: string;
-  driverInfo: DriverInfo[];
+  mobile: number;
+  role: string;
+ 
+}
+
+interface DriverCardProps {
+  driver: Driver;
+  onPress: (driver: Driver) => void;
+
 
 }
 
-interface OrderCardProps {
-  order: Order;
-}
-
-const DriversCard: React.FC<OrderCardProps> = ({ order }) => {
+const DriversCard: React.FC<DriverCardProps> = ({ driver, onPress }) => {
   const getStatusColor = (status: string): string => {
     switch (status.toLowerCase()) {
       case 'pending':
@@ -46,30 +46,16 @@ const DriversCard: React.FC<OrderCardProps> = ({ order }) => {
 
 
  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Open the modal
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  // Close the modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   return (
-    <TouchableOpacity style={styles.card}>
-    <View style={styles.header}>
+    <TouchableOpacity style={styles.card}      onPress={() => onPress(driver)}>
+    <View style={styles.header} 
+    
+    
+    >
      
       <Text style={styles.driverName}>
-       Name: {
-       
-       order.driverInfo.map((driver, index) => (
-        <Text key={index} style={styles.driverName}>{driver.name}</Text>
-      ))
-       
-       }
+       Name: {driver.fullname}
 
         </Text>
        <Text style={styles.status}>
@@ -79,13 +65,13 @@ const DriversCard: React.FC<OrderCardProps> = ({ order }) => {
      
     </View>
 
-    <Text style={styles.address}>Mobile: {order.mobile}</Text>
+    <Text style={styles.address}>Mobile: {driver.mobile}</Text>
 
     <View style={styles.footer}>
     <Text style={styles.time}>Time: </Text>
 
       <TouchableOpacity
-        onPress={() => console.log(`Call driver for order ${order.id}`)}
+        onPress={() => console.log(`Call driver for order ${driver.id}`)}
         style={styles.phone}
       >
         <FontAwesome name="phone" size={22} color="#007BFF" />

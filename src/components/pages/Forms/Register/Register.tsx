@@ -73,18 +73,24 @@ const AuthForm: React.FC = () => {
         throw new Error(errorMessage || 'Registration failed');
       }
 
-      //const data = await response.json();
+      //const user = {fullname, email,role};
+      //await AsyncStorage.setItem('userData', JSON.stringify(user));
+      
 
+      const data = await response.json();
+  
+      const { token } = data;
+    
+      const decodedToken = jwtDecode<DecodedToken>(token);
+  
       const user = {
-        
-        fullname,
-        email,
-        role,
+        _id: decodedToken?.id,
+        fullname: decodedToken?.fullname,
+        email: decodedToken?.email,
+        role: decodedToken?.role,
       };
   
       await AsyncStorage.setItem('userData', JSON.stringify(user));
-      
-
       setFullname('');
       setEmail('');
       setPassword('');

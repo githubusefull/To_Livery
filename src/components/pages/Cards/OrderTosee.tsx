@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Children, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import DriversModal from '../Modals/DriversModal';
@@ -10,6 +10,7 @@ interface DriverInfo {
 }
 
 interface Order {
+  _id: string;
   id: string;
   userId: string;
   mobile: number;
@@ -22,11 +23,27 @@ interface Order {
   driverInfo: DriverInfo[];
 }
 
+interface Driver {
+  _id: string;
+  id: string;
+  fullname: string;
+  email: string;
+  address: string;
+  mobile: number;
+  role: string;
+ 
+}
+
 interface OrderCardProps {
   order: Order;
 }
 
 const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
+
+
+
+  
+
   const getStatusColor = (status: string): string => {
     switch (status.toLowerCase()) {
       case 'pending':
@@ -43,22 +60,32 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-  // Open the modal
-  const handleOpenModal = () => {
+
+
+
+
+  const handleOpenModal = (id: string) => {
+
+   
+    console.log('Opening modal for order ID:', id);
+  
+    setSelectedOrderId(id);
     setIsModalOpen(true);
   };
 
   // Close the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setSelectedOrderId(null);
   };
 
   return (
     <TouchableOpacity style={styles.card}>
       <View style={styles.header}>
         <Text style={[styles.status, { color: getStatusColor(order.status) }]}>
-          {order.status}
+          {order.status} 
         </Text>
 
         {order.driverInfo && order.driverInfo.length > 0 ? (
@@ -67,22 +94,26 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
           ))
         ) : (
           <View style={styles.container}>
-            <Pressable style={styles.addDriver} onPress={handleOpenModal}>
+            <Pressable style={styles.addDriver} onPress={() => handleOpenModal(order._id)}>
               <Text style={styles.buttonText}>Add driver</Text>
             </Pressable>
 
-            <DriversModal visible={isModalOpen} onClose={handleCloseModal}>
-              <Text>Modal Content</Text>
-            </DriversModal>
+
+            {selectedOrderId === order._id && (
+              <DriversModal visible={isModalOpen} onClose={handleCloseModal} order={order} selectedOrderId={selectedOrderId} />
+      
+            )}
+
+
           </View>
         )}
       </View>
 
-      <Text style={styles.address}>Address: {order.address}</Text>
+      <Text style={styles.address}>Address: {order.address} </Text>
 
       <View style={styles.footer}>
         <Text style={styles.time}>Time: {order.mobile}</Text>
-        <TouchableOpacity onPress={() => console.log(`Call driver for order ${order.id}`)} style={styles.phone}>
+        <TouchableOpacity onPress={() => console.log(`Call driver for order ${order._id}`)} style={styles.phone}>
           <FontAwesome name="phone" size={22} color="#007BFF" />
         </TouchableOpacity>
       </View>
