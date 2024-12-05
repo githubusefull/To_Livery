@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, View, } from "react-native";
 import { TextInput, Button, Text, Snackbar } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import type { NavigationProp } from "@react-navigation/native";
+import { useFonts } from "expo-font";
 import Loading from "../../Loading/Loading";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode'; // Import the jwt-decode library
@@ -11,6 +12,7 @@ import {jwtDecode} from 'jwt-decode'; // Import the jwt-decode library
 
 type RootStackParamList = {
   OrderCard: undefined;
+  Register: undefined;
 };
 
 
@@ -20,7 +22,24 @@ interface DecodedToken {
   email: string;
   role: string;
 }
-const AuthForm: React.FC = () => {
+const AuthForm: React.FC = ( ) => {
+
+
+  const [fontsLoaded] = useFonts({
+    "Roboto-Black": require("../../../../../assets/Roboto/Roboto-Black.ttf"),
+    "Roboto-Bold": require("../../../../../assets/Roboto/Roboto-Bold.ttf"),
+    "Roboto-Regular": require("../../../../../assets/Roboto/Roboto-Regular.ttf"),
+    "Roboto-Medium": require("../../../../../assets/Roboto/Roboto-Medium.ttf"),
+    "Roboto-Thin": require("../../../../../assets/Roboto/Roboto-Thin.ttf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      navigation.navigate("Register");
+    }
+  }, [fontsLoaded]);
+
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -114,7 +133,6 @@ const AuthForm: React.FC = () => {
 
   const handleLoginSubmit = async (): Promise<void> => {
     try {
-      // Send a POST request to authenticate the user
       const response = await fetch('https://livery-b.vercel.app/auth/login', {
         method: 'POST',
         headers: {
@@ -176,7 +194,7 @@ const AuthForm: React.FC = () => {
 
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeAreaView style={styles.root} onLayout={onLayoutRootView}>
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}

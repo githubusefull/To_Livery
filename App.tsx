@@ -69,7 +69,7 @@ console.log('role to ', role )
   return (
 
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="Register">
       <Stack.Screen  name="Register" component={RegisterPage} options={{ headerShown: false }}/> 
 
       <Stack.Screen name="OrderCard" component={OrderCard} options={{ headerShown: false }}/>
