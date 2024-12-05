@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Pressable, Modal, FlatList, Alert, TouchableOpa
 import DriversCard from './DriversCard'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import * as Updates from 'expo-updates';
 
 
 
@@ -126,10 +127,10 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
 
       setIsModalVisible(false)
       Alert.alert('Successfully')
+      await Updates.reloadAsync();
+      navigation.navigate('OrderCard');
 
-      setTimeout(() => {
-        navigation.navigate('OrderCard');
-      }, 100);
+     
     } catch (error) {
       console.error('Error:', error);
       Alert.alert('Error', 'An error occurred. Please try again.');

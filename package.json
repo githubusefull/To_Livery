@@ -17,6 +17,7 @@
     "eas-cli": "^13.4.2",
     "expo": "~52.0.11",
     "expo-status-bar": "~2.0.0",
+    "expo-updates": "^0.26.10",
     "glob": "^9.3.5",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.0",

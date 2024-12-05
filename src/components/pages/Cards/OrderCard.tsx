@@ -64,6 +64,7 @@ export default function OrderCard() {
       }
       const data: Order[] = await response.json();
       setOrders(data);
+      
     } catch (error: unknown) {
       console.error('Error fetching orders:', error);
       if (error instanceof Error) {
@@ -181,13 +182,13 @@ export default function OrderCard() {
             onPress={() => handleOptionSelect('goBack')}
             style={styles.option}
           >
-        <MaterialIcons name="arrow-back" size={23} color="#DAF7A6" />
+        <MaterialIcons name="arrow-back" size={21} color="#9c4fd4" />
         </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleLogout()}
             style={styles.option}
           >
-        <MaterialIcons name="logout" size={23} color="#DAF7A6" />
+        <MaterialIcons name="logout" size={21} color="#9c4fd4" />
         </TouchableOpacity>
         </View>
       )}
@@ -286,18 +287,16 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: 'absolute',
-    top: 50, // Adjust this value to position the dropdown
+    top: 50, 
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    zIndex: 20, // Ensure the dropdown is above other elements
-marginLeft: 3,
-    padding: 4,
-    backgroundColor: '#fff',
+    zIndex: 20, 
+    marginLeft: 8.9,
     borderRadius: 5,
   },
   option: {
     padding: 9,
-    backgroundColor: '#9c4fd4',
+    backgroundColor: '#f0f0f0',
     borderRadius: 3,
     margin:1
 
