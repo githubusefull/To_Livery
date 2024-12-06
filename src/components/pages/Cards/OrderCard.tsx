@@ -52,7 +52,14 @@ export default function OrderCard() {
   const dropdownRef = useRef<View | null>(null);
 
 
+  useEffect(() => {
+    // Simulate loading with a timeout (e.g., API initialization, token check)
+    const timer = setTimeout(() => {
+      setLoading(false); // Set loading to false after 2 seconds
+    }, 1000);
 
+    return () => clearTimeout(timer); // Cleanup the timer on unmount
+  }, []);
 
 
 

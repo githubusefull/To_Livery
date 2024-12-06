@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, View, } from "react-native";
-import { TextInput, Button, Text, Snackbar } from "react-native-paper";
+import { TextInput, Button, Text, Snackbar, ActivityIndicator } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import type { NavigationProp } from "@react-navigation/native";
-import { useFonts } from "expo-font";
 import Loading from "../../Loading/Loading";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode'; // Import the jwt-decode library
@@ -22,22 +21,11 @@ interface DecodedToken {
   email: string;
   role: string;
 }
-const AuthForm: React.FC = ( ) => {
+const Register: React.FC = ( ) => {
 
 
-  const [fontsLoaded] = useFonts({
-    "Roboto-Black": require("../../../../../assets/Roboto/Roboto-Black.ttf"),
-    "Roboto-Bold": require("../../../../../assets/Roboto/Roboto-Bold.ttf"),
-    "Roboto-Regular": require("../../../../../assets/Roboto/Roboto-Regular.ttf"),
-    "Roboto-Medium": require("../../../../../assets/Roboto/Roboto-Medium.ttf"),
-    "Roboto-Thin": require("../../../../../assets/Roboto/Roboto-Thin.ttf"),
-  });
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      navigation.navigate("Register");
-    }
-  }, [fontsLoaded]);
+  
+ 
 
 
   const [isLoading, setIsLoading] = useState(true);
@@ -91,11 +79,6 @@ const AuthForm: React.FC = ( ) => {
         const errorMessage = await response.text();
         throw new Error(errorMessage || 'Registration failed');
       }
-
-      //const user = {fullname, email,role};
-      //await AsyncStorage.setItem('userData', JSON.stringify(user));
-      
-
       const data = await response.json();
   
       const { token } = data;
@@ -126,12 +109,14 @@ const AuthForm: React.FC = ( ) => {
       if (error instanceof Error) {
         setSnackbarMessage(error.message);
         setSnackbarVisible(true);
+      
       }
     }
   };
 
 
   const handleLoginSubmit = async (): Promise<void> => {
+    setIsLoading(true); 
     try {
       const response = await fetch('https://livery-b.vercel.app/auth/login', {
         method: 'POST',
@@ -140,42 +125,41 @@ const AuthForm: React.FC = ( ) => {
         },
         body: JSON.stringify({
           email,
-          password
+          password,
         }),
       });
-  
+
       if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(errorMessage || 'Login failed');
       }
-  
-     
+
       const data = await response.json();
-  
       const { token } = data;
-    
+
       const decodedToken = jwtDecode<DecodedToken>(token);
-  
+
       const user = {
         _id: decodedToken?.id,
         fullname: decodedToken?.fullname,
         email: decodedToken?.email,
         role: decodedToken?.role,
       };
-  
+
       await AsyncStorage.setItem('userData', JSON.stringify(user));
       setEmail('');
       setPassword('');
-      setSnackbarMessage("Login successful!"); 
-      setIsLoading(true)
-      setSnackbarVisible(true);
       navigation.navigate('OrderCard');
+      setSnackbarMessage('Login successful!');
+      setSnackbarVisible(true);
     } catch (error: unknown) {
       console.error('Error during login:', error);
       if (error instanceof Error) {
-        setSnackbarMessage(error.message);
+        setSnackbarMessage(error.message); 
         setSnackbarVisible(true);
       }
+    } finally {
+      setIsLoading(false); 
     }
   };
   
@@ -194,11 +178,12 @@ const AuthForm: React.FC = ( ) => {
 
 
   return (
-    <SafeAreaView style={styles.root} onLayout={onLayoutRootView}>
+    <SafeAreaView style={styles.root} >
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
-        duration={Snackbar.DURATION_SHORT}
+        //duration={Snackbar.DURATION_SHORT}
+        duration={5000}
         style={styles.snackbar}
 
       >
@@ -279,23 +264,32 @@ const AuthForm: React.FC = ( ) => {
           </View>
         )}
 
-        <Button
-          mode="contained"
-          onPress={isRegistering ? handleRegisterSubmit : handleLoginSubmit}
+
+{isLoading ? (
+        <ActivityIndicator size="large" color="#007BFF" />
+      ) : (
+
+        <><Button
+              mode="contained"
+              onPress={isRegistering ? handleRegisterSubmit : handleLoginSubmit}
 
 
-          style={styles.submitButton}
-        >
-          {isRegistering ? "Register" : "Login"}
-        </Button>
-
-        <Button
-          mode="text"
-          onPress={() => setIsRegistering(!isRegistering)}
-          style={styles.toggleButton}
-        >
-          {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
-        </Button>
+              style={styles.submitButton}
+            >
+              {isRegistering ? "Register" : "Login"}
+            </Button>
+            
+  
+            
+            <Button
+              mode="text"
+              onPress={() => setIsRegistering(!isRegistering)}
+              style={styles.toggleButton}
+            >
+                {isRegistering ? "Already have an account? Login" : "Don't have an account? Register"}
+              </Button></> 
+      
+      )}
 
         {isRegistering && (
           <Button
@@ -313,7 +307,7 @@ const AuthForm: React.FC = ( ) => {
   );
 };
 
-export default AuthForm;
+export default Register;
 
 const styles = StyleSheet.create({
   root: {
