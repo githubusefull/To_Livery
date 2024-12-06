@@ -1,7 +1,9 @@
-import React, { Children, useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import DriversModal from '../Modals/DriversModal';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 
 interface DriverInfo {
   driverId: string;
@@ -61,6 +63,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [currentOrder, setCurrentOrder] = useState<Order>(order)
 
 
 
@@ -68,9 +71,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
   const handleOpenModal = (id: string) => {
 
-   
     console.log('Opening modal for order ID:', id);
-  
     setSelectedOrderId(id);
     setIsModalOpen(true);
   };
@@ -78,42 +79,102 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   // Close the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedOrderId(null);
   };
+
+  
+
+  
+  const fetchUpdatedOrder = async (): Promise<void> => {
+    try {
+      const response = await fetch(
+        `https://livery-b.vercel.app/order/create/${order._id}`
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Non-OK Response:", errorText);
+        throw new Error(
+          `Error fetching order: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const contentType = response.headers.get("Content-Type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Unexpected content type:", contentType);
+        throw new Error("Response is not JSON.");
+      }
+
+      const updatedOrder: Order = await response.json();
+      console.log("Fetched Updated Order:", updatedOrder);
+      setCurrentOrder(updatedOrder);
+    } catch (error) {
+      console.error("Error fetching updated order:", error);
+    }
+  };
+
+
+
+  const handleDriverUpdate = async () => {
+    await fetchUpdatedOrder(); 
+    handleCloseModal();
+  };
+
+  useEffect(() => {
+    console.log('Order updated:', currentOrder.driverInfo);
+  }, [currentOrder.driverInfo]);
+  
 
   return (
     <TouchableOpacity style={styles.card}>
       <View style={styles.header}>
-        <Text style={[styles.status, { color: getStatusColor(order.status) }]}>
-          {order.status} 
+        <Text style={[styles.status, { color: getStatusColor(currentOrder.status) }]}>
+          {currentOrder.status} 
         </Text>
 
-        {order.driverInfo && order.driverInfo.length > 0 ? (
-          order.driverInfo.map((driver, index) => (
-            <Text key={index} style={styles.driverName}>{driver.name}</Text>
+        {currentOrder.driverInfo && currentOrder.driverInfo.length > 0 ? (
+          currentOrder.driverInfo.map((driver, index) => (
+            <View style={styles.edit} key={index}>
+
+             <Text   style={styles.driverName}>{driver.name}</Text>
+
+
+
+             <Text  style={styles.driverUpdate}>
+             <MaterialIcons name="update" size={23} color="#9c4fd4" />
+</Text>
+
+            </View>
+
           ))
         ) : (
           <View style={styles.container}>
-            <Pressable style={styles.addDriver} onPress={() => handleOpenModal(order._id)}>
+            <Pressable style={styles.addDriver} onPress={() => handleOpenModal(currentOrder._id)}>
               <Text style={styles.buttonText}>Add driver</Text>
             </Pressable>
 
 
-            {selectedOrderId === order._id && (
-              <DriversModal visible={isModalOpen} onClose={handleCloseModal} order={order} selectedOrderId={selectedOrderId} />
+            {selectedOrderId === currentOrder._id && (
+              <DriversModal visible={isModalOpen} 
+              onClose={handleDriverUpdate} 
+              order={order}
+              selectedOrderId={selectedOrderId} setSelectedOrderId={setSelectedOrderId} />
       
             )}
 
 
           </View>
         )}
+
+
+
+
       </View>
 
-      <Text style={styles.address}>Address: {order.address} </Text>
+      <Text style={styles.address}>Address: {currentOrder.address} </Text>
 
       <View style={styles.footer}>
         <Text style={styles.time}>Time: {order.mobile}</Text>
-        <TouchableOpacity onPress={() => console.log(`Call driver for order ${order._id}`)} style={styles.phone}>
+        <TouchableOpacity onPress={() => console.log(`Call driver for order ${currentOrder._id}`)} style={styles.phone}>
           <FontAwesome name="phone" size={22} color="#007BFF" />
         </TouchableOpacity>
       </View>
@@ -126,6 +187,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
   },
+  
   card: {
     backgroundColor: '#fff',
     borderRadius: 5,
@@ -206,6 +268,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#f44336',
     borderRadius: 5,
   },
+  edit: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  gap: 4  },
+  driverUpdate: {
+    marginLeft: 20
+  }
 });
 
 export default OrderCard;

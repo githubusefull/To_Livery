@@ -216,7 +216,10 @@ export default function OrderCard() {
             data={orders}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => item.id || String(index)}  
-            renderItem={({ item }) => <OrderTosee order={item} key={item.id}  />}
+            renderItem={({ item }) => 
+            <OrderTosee order={item} key={item.id}  />
+          
+          }
           />
         </View>
 

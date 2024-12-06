@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Pressable, Modal, FlatList, Alert, TouchableOpa
 import DriversCard from './DriversCard'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import * as Updates from 'expo-updates';
+import Loading from '../Loading/Loading';
 
 
 
@@ -44,6 +44,7 @@ interface ModalComponentProps {
   onClose: () => void;
   selectedOrderId: string | null;
   order: Order;
+  setSelectedOrderId: React.Dispatch<React.SetStateAction<string | null>>;  
 
 }
 
@@ -52,7 +53,7 @@ interface ModalComponentProps {
 
 // Sample order data
 
-const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selectedOrderId, order  }) => {
+const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selectedOrderId,   setSelectedOrderId }) => {
 
 
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -64,7 +65,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
 
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchUsers = async () => {
       try {
         const response = await fetch('https://livery-b.vercel.app/auth/register');
         if (!response.ok) {
@@ -83,7 +84,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
       }
     };
 
-    fetchOrders();
+    fetchUsers();
   }, []);
 
 
@@ -126,10 +127,8 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
       }
 
       setIsModalVisible(false)
-      Alert.alert('Successfully')
-      await Updates.reloadAsync();
       navigation.navigate('OrderCard');
-
+   
      
     } catch (error) {
       console.error('Error:', error);
@@ -137,7 +136,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
     }
   };
   
-
+ 
 
   return (
     <Modal
