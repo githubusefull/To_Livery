@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Pressable, Modal, FlatList, Alert, TouchableOpa
 import DriversCard from './DriversCard'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import useZustand from "../../../../Store/useZustand";
 import Loading from '../Loading/Loading';
 
 
@@ -41,7 +42,7 @@ interface Order {
 }
 interface ModalComponentProps {
   visible: boolean;
-  onClose: () => void;
+  //onClose: () => void;
   selectedOrderId: string | null;
   order: Order;
   setSelectedOrderId: React.Dispatch<React.SetStateAction<string | null>>;  
@@ -53,8 +54,14 @@ interface ModalComponentProps {
 
 // Sample order data
 
-const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selectedOrderId,   setSelectedOrderId }) => {
+const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId }) => {
 
+
+  const {
+    setSnackbarVisible,
+    setSnackbarMessage,
+    setIsModalAddriverOpen
+  } = useZustand();
 
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -64,12 +71,10 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
 
 
   useEffect(() => {
-    // Simulate loading with a timeout (e.g., API initialization, token check)
     const timer = setTimeout(() => {
-      setLoading(false); // Set loading to false after 2 seconds
+      setLoading(false); 
     }, 1000);
-
-    return () => clearTimeout(timer); // Cleanup the timer on unmount
+    return () => clearTimeout(timer); 
   }, []);
 
 
@@ -138,13 +143,25 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
       setIsModalVisible(false)
       navigation.navigate('OrderCard');
    
+      setSnackbarMessage("Add driver successful!");
+      setSnackbarVisible(true);
+
+
+      setIsModalAddriverOpen(false);
+
      
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
+      setSnackbarMessage(error.message);
+      setSnackbarVisible(true);
       Alert.alert('Error', 'An error occurred. Please try again.');
     }
   };
   
+ 
+
+
+
  
 
   if (loading) {
@@ -155,7 +172,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
       visible={visible}
       animationType="slide"
       transparent={true}
-      onRequestClose={onClose}
+      //onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
@@ -218,7 +235,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, onClose, selecte
 
 
 
-        <Pressable style={styles.closeButton} onPress={onClose}>
+        <Pressable style={styles.closeButton} >
 
             <MaterialIcons name="close" size={28} style={styles.iconClose} color="#9c4fd4" />
 

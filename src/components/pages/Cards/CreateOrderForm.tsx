@@ -5,6 +5,7 @@ import { Picker } from "@react-native-picker/picker";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useZustand from "../../../../Store/useZustand";
 
 
 type RootStackParamList = {
@@ -13,9 +14,13 @@ type RootStackParamList = {
 
 };
 const OrderForm = () => {
-
-  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
+  const {
+    setSnackbarVisible,
+    setSnackbarMessage,
+    snackbarVisible,
+    snackbarMessage
+  } = useZustand();
+  
   const [userId, setUserId] = useState<string>("");
   const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");

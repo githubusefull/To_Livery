@@ -7,6 +7,7 @@ import type { NavigationProp } from "@react-navigation/native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../Loading/Loading';
+import useZustand from "../../../../Store/useZustand";
 
 
 
@@ -44,11 +45,17 @@ type RootStackParamList = {
 
 
 export default function OrderCard() {
+  const {
+
+    setSnackbarVisible,
+    setSnackbarMessage,
+    snackbarVisible,
+    snackbarMessage
+  } = useZustand();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
+
   const dropdownRef = useRef<View | null>(null);
 
 

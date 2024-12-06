@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-nativ
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import DriversModal from '../Modals/DriversModal';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import useZustand from "../../../../Store/useZustand";
 
 
 interface DriverInfo {
@@ -42,7 +43,10 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
-
+  const {
+    isModalAddriverOpen,
+    setIsModalAddriverOpen
+  } = useZustand();
 
   
 
@@ -61,7 +65,8 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
     }
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [currentOrder, setCurrentOrder] = useState<Order>(order)
 
@@ -73,13 +78,13 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
     console.log('Opening modal for order ID:', id);
     setSelectedOrderId(id);
-    setIsModalOpen(true);
+    setIsModalAddriverOpen(true);
   };
 
-  // Close the modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+
+  //const handleCloseModal = () => {
+    //setIsModalAddriverOpen(false);
+  //};
 
   
 
@@ -116,11 +121,11 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
   const handleDriverUpdate = async () => {
     await fetchUpdatedOrder(); 
-    handleCloseModal();
   };
 
   useEffect(() => {
-    console.log('Order updated:', currentOrder.driverInfo);
+    console.log(currentOrder.driverInfo, 'driver info..')
+
   }, [currentOrder.driverInfo]);
   
 
@@ -154,8 +159,8 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
 
             {selectedOrderId === currentOrder._id && (
-              <DriversModal visible={isModalOpen} 
-              onClose={handleDriverUpdate} 
+              <DriversModal visible={isModalAddriverOpen} 
+              //onClose={handleDriverUpdate} 
               order={order}
               selectedOrderId={selectedOrderId} setSelectedOrderId={setSelectedOrderId} />
       

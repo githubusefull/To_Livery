@@ -7,6 +7,7 @@ import type { NavigationProp } from "@react-navigation/native";
 import Loading from "../../Loading/Loading";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode'; // Import the jwt-decode library
+import useZustand from "../../../../../Store/useZustand";
 
 
 type RootStackParamList = {
@@ -26,6 +27,11 @@ const Register: React.FC = ( ) => {
 
   
  
+  const {
+   
+    setSnackbarVisible,
+    setSnackbarMessage,
+  } = useZustand();
 
 
   const [isLoading, setIsLoading] = useState(true);
@@ -48,8 +54,7 @@ const Register: React.FC = ( ) => {
   const [mobile, setMobile] = useState<string>("");
   const [role, setRole] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
-  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
+ 
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -179,20 +184,7 @@ const Register: React.FC = ( ) => {
 
   return (
     <SafeAreaView style={styles.root} >
-      <Snackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        //duration={Snackbar.DURATION_SHORT}
-        duration={5000}
-        style={styles.snackbar}
-
-      >
-        <Text style={styles.snackText}>
-          {snackbarMessage}
-        </Text>
-
-
-      </Snackbar>
+     
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>{isRegistering ? "Register" : "Login"}</Text>
 
