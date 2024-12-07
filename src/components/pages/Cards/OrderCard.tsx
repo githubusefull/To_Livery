@@ -50,11 +50,13 @@ export default function OrderCard() {
     setSnackbarVisible,
     setSnackbarMessage,
     snackbarVisible,
-    snackbarMessage
+    snackbarMessage,
+    setOrders,
+    orders,
+    setLoading,
+    loading
   } = useZustand();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
 
   const dropdownRef = useRef<View | null>(null);
 

@@ -40,6 +40,7 @@ interface Order {
   status: string;
   driverInfo: DriverInfo[];
 }
+
 interface ModalComponentProps {
   visible: boolean;
   //onClose: () => void;
@@ -54,13 +55,15 @@ interface ModalComponentProps {
 
 // Sample order data
 
-const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId }) => {
+const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId, order }) => {
 
 
   const {
     setSnackbarVisible,
     setSnackbarMessage,
-    setIsModalAddriverOpen
+    setIsModalAddriverOpen,
+    currentOrder,
+    setCurrentOrder
   } = useZustand();
 
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -118,6 +121,52 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
 
 
 
+ 
+
+  
+
+
+
+ 
+  const fetchUpdatedOrder = async (): Promise<void> => {
+    try {
+      const response = await fetch(
+        `https://livery-b.vercel.app/order/create/${order._id}`
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Non-OK Response:", errorText);
+        throw new Error(
+          `Error fetching order: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const contentType = response.headers.get("Content-Type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Unexpected content type:", contentType);
+        throw new Error("Response is not JSON.");
+      }
+
+      const updatedOrder: Order = await response.json();
+      console.log("Fetched Updated Order:", updatedOrder);
+      setCurrentOrder(updatedOrder);
+    } catch (error) {
+      console.error("Error fetching updated order:", error);
+    }
+  };
+
+
+
+
+  const handleDriverUpdate = async () => {
+    await fetchUpdatedOrder(); 
+  };
+
+
+
+
+
   const handleSubmit = async () => {
     
     try {
@@ -141,14 +190,12 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
       }
 
       setIsModalVisible(false)
+      await fetchUpdatedOrder();
       navigation.navigate('OrderCard');
-   
       setSnackbarMessage("Add driver successful!");
       setSnackbarVisible(true);
-
-
       setIsModalAddriverOpen(false);
-
+      
      
     } catch (error: any) {
       console.error('Error:', error);
