@@ -43,7 +43,7 @@ interface Order {
 
 interface ModalComponentProps {
   visible: boolean;
-  //onClose: () => void;
+  onClose: () => void;
   selectedOrderId: string | null;
   order: Order;
   setSelectedOrderId: React.Dispatch<React.SetStateAction<string | null>>;  
@@ -55,15 +55,14 @@ interface ModalComponentProps {
 
 // Sample order data
 
-const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId, order }) => {
+const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId, onClose}) => {
 
 
   const {
     setSnackbarVisible,
     setSnackbarMessage,
     setIsModalAddriverOpen,
-    currentOrder,
-    setCurrentOrder
+    fetchUpdatedOrder
   } = useZustand();
 
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -121,41 +120,6 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
 
 
 
- 
-
-  
-
-
-
- 
-  const fetchUpdatedOrder = async (): Promise<void> => {
-    try {
-      const response = await fetch(
-        `https://livery-b.vercel.app/order/create/${order._id}`
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Non-OK Response:", errorText);
-        throw new Error(
-          `Error fetching order: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const contentType = response.headers.get("Content-Type");
-      if (!contentType || !contentType.includes("application/json")) {
-        console.error("Unexpected content type:", contentType);
-        throw new Error("Response is not JSON.");
-      }
-
-      const updatedOrder: Order = await response.json();
-      console.log("Fetched Updated Order:", updatedOrder);
-      setCurrentOrder(updatedOrder);
-    } catch (error) {
-      console.error("Error fetching updated order:", error);
-    }
-  };
-
 
 
 
@@ -190,12 +154,13 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
       }
 
       setIsModalVisible(false)
-      await fetchUpdatedOrder();
       navigation.navigate('OrderCard');
+
       setSnackbarMessage("Add driver successful!");
       setSnackbarVisible(true);
       setIsModalAddriverOpen(false);
-      
+      onClose();
+
      
     } catch (error: any) {
       console.error('Error:', error);
@@ -227,14 +192,11 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
 
           <View  style={styles.flatList}>
           <Text style={styles.buttonText}>Assign Driver</Text>
-  
-
-  {/* Confirmation Modal */}
-  <Modal
+        <Modal
         animationType="slide"
         transparent
         visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)} // Close modal on back button
+        onRequestClose={() => setIsModalVisible(false)} 
       >
         <View style={styles.modalOverlayCofirm}>
           <View style={styles.modalContentConfirm}>
@@ -253,12 +215,12 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
               >
                 <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.confirmButton]}
-                onPress={handleSubmit} // Confirm action
-              >
+
+
+              <Pressable style={[styles.button, styles.confirmButton]} onPress={handleSubmit}>
                 <Text style={styles.confirmText}>Yes</Text>
-              </TouchableOpacity>
+               
+              </Pressable>
             </View>
           </View>
         </View>
@@ -282,11 +244,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
 
 
 
-        <Pressable style={styles.closeButton} >
-
-            <MaterialIcons name="close" size={28} style={styles.iconClose} color="#9c4fd4" />
-
-          </Pressable>
+       
           
         </View>
       </View>
@@ -296,7 +254,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
 
 const styles = StyleSheet.create({
   button: {
-    padding: 15,
+    padding: 5,
     borderRadius: 10,
     backgroundColor: '#007bff',
   },
@@ -310,12 +268,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#2222',
+    backgroundColor: '#2323',
 
   },
   modalContent: {
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 3,
     backgroundColor: '#fff',
     width: 360,
     alignItems: 'center',
@@ -357,13 +315,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: '#3434',
+    fontFamily: 'Robot-Regular',
   },
   modalContentConfirm: {
     width: '80%',
     padding: 20,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 4,
     elevation: 5,
   },
   modalTitle: {
@@ -385,16 +344,20 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: '#dc3545',
-    marginRight: 10,
   },
   cancelText: {
     color: '#fff',
   },
   confirmButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#dc67545',
+    marginRight: 10,
   },
+
+
+
   confirmText: {
-    color: '#fff',
+    color: '#55555',
+
   },
 });
 

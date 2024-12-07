@@ -1,3 +1,4 @@
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { create } from "zustand";
 
 
@@ -38,10 +39,12 @@ interface SnackbarState {
   setCurrentOrder: (order: Order | null) => void; 
 
   setLoading: (loading: boolean) => void; 
+  fetchUpdatedOrder: () => Promise<void>;
 
+  
 }
 
-const Zustand = create<SnackbarState>((set) => ({
+const Zustand = create<SnackbarState>((set, get) => ({
   snackbarVisible: false,
   isModalAddriverOpen: false,
   snackbarMessage: "",
@@ -55,6 +58,47 @@ const Zustand = create<SnackbarState>((set) => ({
   setOrders: (orders) => set({ orders }), 
   setCurrentOrder: (order) => set({ currentOrder: order }), 
   setLoading: (loading) => set({ loading }), 
+
+
+  fetchUpdatedOrder: async () => {
+    const currentOrder = get().currentOrder; // Accessing state with get()
+    if (!currentOrder) {
+      console.error("No current order to fetch.");
+      return;
+    }
+
+    try {
+      set({ loading: true });
+
+      const response = await fetch(
+        `https://livery-b.vercel.app/order/create/${currentOrder._id}`
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Non-OK Response:", errorText);
+        throw new Error(
+          `Error fetching order: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const contentType = response.headers.get("Content-Type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Unexpected content type:", contentType);
+        throw new Error("Response is not JSON.");
+      }
+
+      const updatedOrder: Order = await response.json();
+      console.log("Fetched Updated Order:", updatedOrder);
+
+      set({ currentOrder: updatedOrder });
+    } catch (error) {
+      console.error("Error fetching updated order:", error);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
 
 }));
 

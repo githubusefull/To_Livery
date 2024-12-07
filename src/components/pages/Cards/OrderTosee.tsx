@@ -160,7 +160,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
             {selectedOrderId === currentOrder._id && (
               <DriversModal visible={isModalAddriverOpen} 
-              //onClose={handleDriverUpdate} 
+              onClose={handleDriverUpdate} 
               order={order}
               selectedOrderId={selectedOrderId} setSelectedOrderId={setSelectedOrderId} />
       
