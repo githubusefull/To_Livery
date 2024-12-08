@@ -29,7 +29,15 @@
       "eas": {
         "projectId": "cc8c7de7-9b4c-44cb-ba59-f4fd5d3302be"
       }
-    }
-   
+    },
+
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ]
+    ]
   }
 }

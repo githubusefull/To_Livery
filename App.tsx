@@ -10,6 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import useZustand from './Store/useZustand'; 
 import { Snackbar, Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context'; 
+//import GoogleMap from './src/components/pages/Google/GoogleMap';
+import MyLocation from './src/components/pages/Google/Location';
 
 const Stack = createNativeStackNavigator();
 
@@ -84,6 +86,12 @@ const App: React.FC = () => {
         <Stack.Screen
           name="CreateOrderForm"
           component={NewOrder}
+          options={{ headerShown: false }}
+        />
+
+<Stack.Screen
+          name="Maps"
+          component={MyLocation}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
