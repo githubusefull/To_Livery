@@ -1,13 +1,15 @@
 import React from 'react';
 import MapView from 'react-native-maps';
 import { StyleSheet, View } from 'react-native';
-import Location from './Location';
+//import Location from './Location';
 
 export default function GoogleMap() {
+  
+
+
   return (
     <View style={styles.container}>
       <MapView style={styles.map}  />
-      <Location />
     </View>
   );
 }

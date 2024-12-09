@@ -1,6 +1,6 @@
 import React, {  useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View, } from "react-native";
-import { TextInput, Button, Text, Snackbar, ActivityIndicator } from "react-native-paper";
+import {  SafeAreaView, ScrollView, StyleSheet, View, } from "react-native";
+import { TextInput, Button, Text,  ActivityIndicator } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import type { NavigationProp } from "@react-navigation/native";
@@ -8,7 +8,7 @@ import Loading from "../../Loading/Loading";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode'; // Import the jwt-decode library
 import useZustand from "../../../../../Store/useZustand";
-
+import * as Location from 'expo-location';
 
 type RootStackParamList = {
   OrderCard: undefined;
@@ -23,26 +23,34 @@ interface DecodedToken {
   role: string;
 }
 const Register: React.FC = ( ) => {
-
-
-  
- 
-  const {
-   
-    setSnackbarVisible,
-    setSnackbarMessage,
-  } = useZustand();
-
-
+   const {setSnackbarVisible, setSnackbarMessage} = useZustand();
   const [isLoading, setIsLoading] = useState(true);
 
+
+  const getLocation = async () => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        throw new Error('Location permission not granted');
+      }
+      const location = await Location.getCurrentPositionAsync({});
+      return {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+    } catch (error) {
+      console.error('Error fetching location:', error);
+      throw error;
+    }
+  };
+
+
   useEffect(() => {
-    // Simulate loading with a timeout (e.g., API initialization, token check)
     const timer = setTimeout(() => {
-      setIsLoading(false); // Set loading to false after 2 seconds
+      setIsLoading(false); 
     }, 1000);
 
-    return () => clearTimeout(timer); // Cleanup the timer on unmount
+    return () => clearTimeout(timer); 
   }, []);
 
 
@@ -62,7 +70,8 @@ const Register: React.FC = ( ) => {
 
   const handleRegisterSubmit = async (): Promise<void> => {
     try {
-      // Send a POST request with form data to the backend
+      const location = await getLocation(); // Fetch location
+
       const response = await fetch('https://livery-b.vercel.app/auth/register', {
         method: 'POST',
         headers: {
@@ -75,11 +84,10 @@ const Register: React.FC = ( ) => {
           address,
           mobile,
           role,
+          location
         }),
       });
 
-
-      // Check if the registration was successful
       if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(errorMessage || 'Registration failed');
@@ -152,6 +160,24 @@ const Register: React.FC = ( ) => {
       };
 
       await AsyncStorage.setItem('userData', JSON.stringify(user));
+    try {
+      const location = await getLocation();
+
+      await fetch('https://livery-b.vercel.app/auth/location', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: decodedToken?.id,
+          location,
+        }),
+
+        
+      });
+    } catch (locationError) {
+      console.warn('Failed to fetch or send location:', locationError);
+    }
       setEmail('');
       setPassword('');
       navigation.navigate('OrderCard');

@@ -1,9 +1,11 @@
 import React, {  useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, Linking } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import DriversModal from '../Modals/DriversModal';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import useZustand from "../../../../Store/useZustand";
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import Feather from '@expo/vector-icons/Feather';
 
 
 interface DriverInfo {
@@ -39,7 +41,13 @@ interface Driver {
 
 interface OrderCardProps {
   order: Order;
+
 }
+
+
+type RootStackParamList = {
+  OrderDetails: { orderId: string };
+};
 
 const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
@@ -48,7 +56,12 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
     setIsModalAddriverOpen
   } = useZustand();
 
-  
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const handleViewDetails = () => {
+    navigation.navigate('OrderDetails', { orderId: order._id });
+  };
 
   const getStatusColor = (status: string): string => {
     switch (status.toLowerCase()) {
@@ -129,8 +142,15 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   }, [currentOrder.driverInfo]);
   
 
+
+  const handleCallPress = () => {
+    const phoneNumber = `tel:${currentOrder.mobile}`;
+    Linking.openURL(phoneNumber).catch(err => 
+      console.error('Failed to open dialer:', err)
+    );
+  };
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={handleViewDetails}>
       <View style={styles.header}>
         <Text style={[styles.status, { color: getStatusColor(currentOrder.status) }]}>
           {currentOrder.status} 
@@ -144,9 +164,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
 
 
-             <Text  style={styles.driverUpdate}>
-             <MaterialIcons name="update" size={23} color="#9c4fd4" />
-</Text>
+         
 
             </View>
 
@@ -179,7 +197,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
 
       <View style={styles.footer}>
         <Text style={styles.time}>Time: {order.mobile}</Text>
-        <TouchableOpacity onPress={() => console.log(`Call driver for order ${currentOrder._id}`)} style={styles.phone}>
+        <TouchableOpacity onPress={handleCallPress} style={styles.phone}>
           <FontAwesome name="phone" size={22} color="#007BFF" />
         </TouchableOpacity>
       </View>

@@ -11,9 +11,18 @@ import useZustand from './Store/useZustand';
 import { Snackbar, Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context'; 
 //import GoogleMap from './src/components/pages/Google/GoogleMap';
-import MyLocation from './src/components/pages/Google/Location';
+import MyLocation from './src/components/pages/Google/GoogleMap';
+import OrderDetails from './src/components/pages/Cards/OrderDetails';
 
-const Stack = createNativeStackNavigator();
+type RootStackParamList = {
+  Register: undefined;
+  OrderCard: undefined;
+  OrderDetails: { orderId: string }; // Order ID parameter
+  CreateOrderForm: undefined;
+  Maps: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {
   const {
@@ -83,6 +92,13 @@ const App: React.FC = () => {
           component={OrderCard}
           options={{ headerShown: false }}
         />
+
+         <Stack.Screen name="OrderDetails"
+          component={OrderDetails} 
+          options={{ headerShown: false }}
+
+          />
+
         <Stack.Screen
           name="CreateOrderForm"
           component={NewOrder}

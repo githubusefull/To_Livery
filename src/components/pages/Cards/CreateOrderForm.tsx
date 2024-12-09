@@ -160,13 +160,7 @@ const OrderForm = () => {
 
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Maps")}
-          
-        >
-        <MaterialIcons name="map" size={26} color="#9c4fd4" />
-
-        </TouchableOpacity>
+      
 
       </View>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>

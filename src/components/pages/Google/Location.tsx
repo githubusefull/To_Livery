@@ -37,10 +37,10 @@ export default function App() {
   }
 
 
-  console.log('my location', location?.coords.latitude, location?.coords.longitude)
+  console.log('my location cc')
   return (
     <View style={styles.container}>
-      <Text style={styles.paragraph}>{text}</Text>
+      <Text style={styles.paragraph}>ddd</Text>
     </View>
   );
 }
