@@ -12,6 +12,7 @@ interface DriverInfo {
   driverId: string;
   name: string;
   mobile: string;
+  location: string;
 }
 
 interface Order {

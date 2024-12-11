@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Pressable, Modal, FlatList, Alert, TouchableOpacity } from 'react-native';
 import DriversCard from './DriversCard'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import useZustand from "../../../../Store/useZustand";
 import Loading from '../Loading/Loading';
@@ -12,6 +11,7 @@ interface DriverInfo {
   driverId: string;
   name: string;
   mobile: string;
+  location: string;
 }
 type RootStackParamList = {
   OrderCard: undefined;
@@ -25,6 +25,7 @@ interface Driver {
   address: string;
   mobile: number;
   role: string;
+  location: string;
  
 }
 interface Order {
@@ -145,6 +146,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
             driverId: selectedDriver?._id,
             name: selectedDriver?.fullname,
             mobile: selectedDriver?.mobile,
+            location: selectedDriver?.location
           }),
         }
       );

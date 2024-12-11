@@ -17,7 +17,7 @@ interface Driver {
   address: string;
   mobile: number;
   role: string;
- 
+ location: string;
 }
 
 interface DriverCardProps {

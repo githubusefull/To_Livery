@@ -174,6 +174,7 @@ const Register: React.FC = ( ) => {
         }),
 
         
+        
       });
     } catch (locationError) {
       console.warn('Failed to fetch or send location:', locationError);

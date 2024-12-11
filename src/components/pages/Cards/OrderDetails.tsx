@@ -2,14 +2,14 @@ import { NavigationProp, RouteProp } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 
 
 type RootStackParamList = {
     OrderDetails: { orderId: string };
-    Maps: undefined;
+    Maps: { latitude: number; longitude: number };
+
   };
 type OrderDetailsProps = {
     route: RouteProp<RootStackParamList, 'OrderDetails'>;
@@ -25,6 +25,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ route, navigation }) => {
 
   const { orderId } = route.params; // Extract orderId from the route params
   const [orderDetails, setOrderDetails] = useState<any | null>(null);
+
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleOptionSelect = (option: any) => {
@@ -49,6 +51,9 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ route, navigation }) => {
 
     fetchOrderDetails();
   }, [orderId]);
+
+
+
 
   if (!orderDetails) {
     return <Text>Loading order details...</Text>;
@@ -127,18 +132,29 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ route, navigation }) => {
         Mobile: {orderDetails.driverInfo?.map((driver: any) => driver.mobile).join(', ') || 'No drivers assigned'}
       </Text>
       <Text style={styles.driverInfo}>
-        Driver Location:
+        Driver Location: 
+       
+
       </Text>
       <TouchableOpacity
-          onPress={() => navigation.navigate("Maps")}
-          
-        >
-            <View  style={styles.map}>
-        <Entypo name="location" size={24} color="#9c4fd4" />
+  onPress={() => {
+    const driverLocation = orderDetails.driverInfo?.[0]?.location;
+    if (driverLocation?.latitude && driverLocation?.longitude) {
+      navigation.navigate('Maps', { 
+        latitude: driverLocation.latitude, 
+        longitude: driverLocation.longitude 
+      });
 
-            </View>
+    } else {
+      console.log('Driver location not available');
+    }
+  }}
+>
+  <View style={styles.map}>
+    <Entypo name="location" size={24} color="#9c4fd4" />
+  </View>
+</TouchableOpacity>
 
-        </TouchableOpacity>
 
         </View>
     </View>
@@ -229,7 +245,7 @@ const styles = StyleSheet.create({
 
     width: 50, // Adjust width as needed
     height: 50, // Adjust height as needed
-    backgroundColor: '#2323', // Optional for visibility
+    backgroundColor: '#f0f0f0',
     justifyContent: 'center', // Centers vertically
     alignItems: 'center', // Centers horizontally
     borderRadius: 5, // Optional, to make it circular
