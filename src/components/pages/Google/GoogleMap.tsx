@@ -9,10 +9,11 @@ import {
   View,
   TouchableOpacity,
   Image,
+  
 } from "react-native";
 import { Text, ActivityIndicator } from "react-native-paper";
 import * as Location from "expo-location";
-import MapView, {  Marker } from "react-native-maps";
+import MapView, {  Callout, Marker } from "react-native-maps";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { getDistance } from "geolib";
 
@@ -22,7 +23,7 @@ type RootStackParamList = {
 };
 
 const GoogleMap: React.FC<{ route: any }> = ({ route }) => {
-  const { latitude, longitude } = route.params;
+  const { latitude, longitude, driverName } = route.params;
 
 
 
@@ -167,14 +168,19 @@ const [userLocation, setUserLocation] = useState({ latitude:latitude, longitude:
                 latitude: location.latitude,
                 longitude: location.longitude,
               }}
-              title="Your Location" >
+              title="Your Location">
+
+              
              <Image
           source={require("../../../../assets/car.png")} // Replace with your custom icon path
           style={styles.markerIcon}
         />
-
-
+  <View style={styles.bgDriver}>
+      <Text style={styles.textDriver}>{driverName}</Text>
+    </View>
+       
                 </Marker>
+             
           </MapView>
           </View>
         ) : (
@@ -188,7 +194,7 @@ const [userLocation, setUserLocation] = useState({ latitude:latitude, longitude:
         <Text style={styles.footerText}>
         {distance !== null ? (
         <Text style={styles.distanceText}>
-          Distance between Admin and User: {distance.toFixed(2)} km
+          Distance between You and Driver: {distance.toFixed(2)} km
         </Text>
       ) : (
         <Text style={styles.distanceText}>Calculating distance...</Text>
@@ -208,8 +214,9 @@ const styles = StyleSheet.create({
   markerIcon: {
     width: 40, // Customize the size
     height: 40,
-    resizeMode: "contain", // Ensure the image scales correctly
-  },
+    resizeMode:"contain"
+
+   },
   footer: {
     height: 70,
     backgroundColor: "#fff",
@@ -220,6 +227,18 @@ const styles = StyleSheet.create({
   footerText: {
     color: "#6B7280",
     fontSize: 16,
+  },
+ 
+
+  bgDriver: {
+  
+
+  },
+  textDriver: {
+    fontSize: 10,  // Ensure text is large enough to be seen
+    color: "#007BFF",  // Text color (blue)
+    fontWeight: "bold",  // Bold text for visibility
+    textAlign: "center",
   },
 
   distanceText: {
@@ -334,15 +353,13 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 8, 
     overflow: "hidden", 
-    margin: 1, 
+    
+     
   },
   map: {
-    height: 630,
+    height: 640,
       width: "100%",
-      alignItems: "center",
-    
-      
-    
+      alignItems: "center",    
   },
   text: {
     fontSize: 16,

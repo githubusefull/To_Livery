@@ -136,7 +136,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
     
     try {
       const response = await fetch(
-        `https://livery-b.vercel.app/order/create/${selectedOrderId}`, // Use the correct URL
+        `https://livery-b.vercel.app/order/create/${selectedOrderId}`, 
         {
           method: 'PUT',
           headers: {

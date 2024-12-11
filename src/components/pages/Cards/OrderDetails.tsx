@@ -8,7 +8,7 @@ import Feather from '@expo/vector-icons/Feather';
 
 type RootStackParamList = {
     OrderDetails: { orderId: string };
-    Maps: { latitude: number; longitude: number };
+    Maps: { latitude: number; longitude: number};
 
   };
 type OrderDetailsProps = {
@@ -139,10 +139,12 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ route, navigation }) => {
       <TouchableOpacity
   onPress={() => {
     const driverLocation = orderDetails.driverInfo?.[0]?.location;
+    //const driverName = orderDetails.driver?.name;
+
     if (driverLocation?.latitude && driverLocation?.longitude) {
       navigation.navigate('Maps', { 
         latitude: driverLocation.latitude, 
-        longitude: driverLocation.longitude 
+        longitude: driverLocation.longitude
       });
 
     } else {
