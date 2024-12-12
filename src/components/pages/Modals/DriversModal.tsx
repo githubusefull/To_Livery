@@ -229,8 +229,8 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, selectedOrderId,
               </View>
             </Modal>
             <FlatList
-
-              data={drivers}
+              data={drivers.filter(driver => driver.role === 'Driver')}
+              //data={drivers}
               showsVerticalScrollIndicator={false}
               keyExtractor={(item, index) => item.id || String(index)}
 

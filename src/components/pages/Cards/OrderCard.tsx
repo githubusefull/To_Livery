@@ -55,20 +55,24 @@ export default function OrderCard() {
     setOrders,
     orders,
     setLoading,
-    loading
+    loading,
+    fetchRoleAndUserId,
+    userId
   } = useZustand();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  useEffect(() => {
+    fetchRoleAndUserId();
+  }, [fetchRoleAndUserId]);
 
   const dropdownRef = useRef<View | null>(null);
 
 
   useEffect(() => {
-    // Simulate loading with a timeout (e.g., API initialization, token check)
     const timer = setTimeout(() => {
-      setLoading(false); // Set loading to false after 2 seconds
+      setLoading(false); 
     }, 1000);
-
-    return () => clearTimeout(timer); // Cleanup the timer on unmount
+    return () => clearTimeout(timer); 
   }, []);
 
 
@@ -225,7 +229,9 @@ export default function OrderCard() {
         <View  style={styles.flatList}>
 
           <FlatList
-            data={orders}
+            //data={orders}
+            data={orders.filter(order => order.userId === userId)}
+
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => item.id || String(index)}  
             renderItem={({ item }) => 

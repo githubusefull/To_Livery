@@ -29,7 +29,7 @@ const OrderForm = () => {
   const [boxType, setBoxType] = useState("Small");
   const [From, setFrom] = useState("");
   const [To, setTo] = useState("");
-  const [status, setStatus] = useState("Unassigned");
+  const [status, setStatus] = useState("Pending");
   const [driverInfo, setDriverInfo] = useState([]);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();

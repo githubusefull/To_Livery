@@ -1,4 +1,4 @@
-import React, {  useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Pressable, Linking } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import DriversModal from '../Modals/DriversModal';
@@ -35,7 +35,7 @@ interface Driver {
   address: string;
   mobile: number;
   role: string;
- 
+
 }
 
 interface OrderCardProps {
@@ -64,14 +64,13 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
 
   const getStatusColor = (status: string): string => {
     switch (status.toLowerCase()) {
-      case 'pending':
+      case 'Pending':
         return 'orange';
-      case 'in transit':
+      case 'In transit':
         return '#28a745';
-      case 'delivered':
+      case 'Delivered':
         return '#007bff';
-      case 'unassigned':
-        return '#2323';
+   
       default:
         return 'gray';
     }
@@ -83,24 +82,14 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
   const [currentOrder, setCurrentOrder] = useState<Order>(order)
 
 
-
-
-
   const handleOpenModal = (id: string) => {
-
-    console.log('Opening modal for order ID:', id);
     setSelectedOrderId(id);
     setIsModalAddriverOpen(true);
   };
 
 
-  //const handleCloseModal = () => {
-    //setIsModalAddriverOpen(false);
-  //};
 
-  
 
-  
   const fetchUpdatedOrder = async (): Promise<void> => {
     try {
       const response = await fetch(
@@ -132,14 +121,14 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
 
 
   const handleDriverUpdate = async () => {
-    await fetchUpdatedOrder(); 
+    await fetchUpdatedOrder();
   };
 
   useEffect(() => {
     console.log(currentOrder.driverInfo, 'driver info..')
 
   }, [currentOrder.driverInfo]);
-  
+
 
 
 
@@ -155,18 +144,18 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
       console.error('No driver information available');
     }
   };
-  
+
   return (
     <TouchableOpacity style={styles.card} onPress={handleViewDetails}>
       <View style={styles.header}>
         <Text style={[styles.status, { color: getStatusColor(currentOrder.status) }]}>
-          {currentOrder.status} 
+          {currentOrder.status}
         </Text>
 
         {currentOrder.driverInfo && currentOrder.driverInfo.length > 0 ? (
           currentOrder.driverInfo.map((driver, index) => (
             <View style={styles.edit} key={index}>
-             <Text   style={styles.driverName}>{driver.name}</Text>
+              <Text style={styles.driverName}>{driver.name}</Text>
             </View>
 
           ))
@@ -178,11 +167,11 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
 
 
             {selectedOrderId === currentOrder._id && (
-              <DriversModal visible={isModalAddriverOpen} 
-              onClose={handleDriverUpdate} 
-              order={order}
-              selectedOrderId={selectedOrderId} setSelectedOrderId={setSelectedOrderId} />
-      
+              <DriversModal visible={isModalAddriverOpen}
+                onClose={handleDriverUpdate}
+                order={order}
+                selectedOrderId={selectedOrderId} setSelectedOrderId={setSelectedOrderId} />
+
             )}
 
 
@@ -211,7 +200,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
   },
-  
+
   card: {
     backgroundColor: '#fff',
     borderRadius: 5,
@@ -296,7 +285,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  gap: 4  },
+    gap: 4
+  },
   driverUpdate: {
     marginLeft: 20
   }

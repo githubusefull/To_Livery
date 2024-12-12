@@ -1,9 +1,10 @@
 import React, {  useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Pressable, Linking } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Pressable, Linking, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import DriversModal from '../Modals/DriversModal';
 import useZustand from "../../../../Store/useZustand";
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import Loading from '../Loading/Loading';
 
 
 interface DriverInfo {
@@ -52,7 +53,11 @@ const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
 
   const {
     isModalAddriverOpen,
-    setIsModalAddriverOpen
+    setIsModalAddriverOpen,
+    loading,
+    setLoading,
+    setSnackbarMessage,
+    setSnackbarVisible
   } = useZustand();
 
 
@@ -70,8 +75,6 @@ const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
         return '#28a745';
       case 'delivered':
         return '#007bff';
-      case 'unassigned':
-        return '#2323';
       default:
         return 'gray';
     }
@@ -87,16 +90,11 @@ const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
 
 
   const handleOpenModal = (id: string) => {
-
-    console.log('Opening modal for order ID:', id);
     setSelectedOrderId(id);
     setIsModalAddriverOpen(true);
   };
 
 
-  //const handleCloseModal = () => {
-    //setIsModalAddriverOpen(false);
-  //};
 
   
 
@@ -148,6 +146,48 @@ const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
       console.error('Failed to open dialer:', err)
     );
   };
+
+
+
+  const handleStatusUpdate = async (): Promise<void> => {
+    setLoading(true);
+    try {
+      const response = await fetch('https://livery-b.vercel.app/order/create', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: currentOrder._id,
+          newStatus: 'Accepted',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Failed to update status:', errorText);
+        throw new Error('Error updating order status');
+      }
+
+      const updatedOrder: Order = await response.json();
+      console.log('Order updated successfully:', updatedOrder);
+      setCurrentOrder(updatedOrder);
+
+      // Optional: Alert the user
+      Alert.alert('Success', 'Order status updated to Accepted');
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'Failed to update order status');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+    
+  
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <TouchableOpacity style={styles.card} onPress={handleViewDetails}>
       <View style={styles.header}>
@@ -170,10 +210,19 @@ const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
           ))
         ) : (
           <View style={styles.container}>
-            <Pressable style={styles.addDriver} onPress={() => handleOpenModal(currentOrder._id)}>
-              <Text style={styles.buttonText}>Add driver</Text>
+
+<View style={styles.buTTon}>
+   <Pressable style={styles.addDriver} onPress={handleStatusUpdate}>
+              <Text style={styles.buttonText} >Accepted</Text>
+            </Pressable>
+            
+            <Pressable style={styles.addDriverRefuse} onPress={() => handleOpenModal(currentOrder._id)}>
+              <Text style={styles.buttonTextRefuse}>Refuse</Text>
             </Pressable>
 
+  </View>
+ 
+            
 
             {selectedOrderId === currentOrder._id && (
               <DriversModal visible={isModalAddriverOpen} 
@@ -186,6 +235,7 @@ const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
 
           </View>
         )}
+
 
 
 
@@ -234,6 +284,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  buTTon: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+    gap: 6
+    },
   addDriver: {
     padding: 4,
     backgroundColor: '#9c4fd4',
@@ -248,6 +305,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
+
+  addDriverRefuse: {
+    padding: 4,
+    backgroundColor: '#2323',
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 8,
+    paddingRight: 8,
+  },
+  buttonTextRefuse: {
+    color: '#9c4fd4',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+
   driverName: {
     fontSize: 14,
     color: '#454545',

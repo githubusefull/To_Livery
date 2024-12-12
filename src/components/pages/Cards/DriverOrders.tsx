@@ -56,7 +56,9 @@ export default function OrderCard() {
     setOrders,
     orders,
     setLoading,
-    loading
+    loading,
+    fetchRoleAndUserId,
+    userId
   } = useZustand();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -96,7 +98,10 @@ export default function OrderCard() {
 
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+    fetchRoleAndUserId();
+  }, [fetchOrders, fetchRoleAndUserId]);
+
+
 
   useFocusEffect(
     useCallback(() => {
@@ -217,6 +222,7 @@ export default function OrderCard() {
 
 
         <Text style={styles.navTitle}>Driver Orders</Text>
+      {/*
         <TouchableOpacity
           onPress={() => navigation.navigate("CreateOrderForm")}
           
@@ -224,6 +230,8 @@ export default function OrderCard() {
         <MaterialIcons name="add" size={26} color="#9c4fd4" />
 
         </TouchableOpacity>
+      
+      */}
       </View>
 
 
@@ -231,7 +239,7 @@ export default function OrderCard() {
         <View  style={styles.flatList}>
 
           <FlatList
-            data={orders}
+            data={orders.filter(order => order.userId === userId)}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => item.id || String(index)}  
             renderItem={({ item }) => 
