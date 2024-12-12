@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Text, ActivityIndicator } from "react-native-paper";
 import * as Location from "expo-location";
-import MapView, {  Callout, Marker } from "react-native-maps";
+import MapView, {   Marker } from "react-native-maps";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { getDistance } from "geolib";
 
@@ -90,6 +90,7 @@ const [userLocation, setUserLocation] = useState({ latitude:latitude, longitude:
       setDistance(dist);
     }
   }, [location, userLocation]);
+
 
   if (isLoading) {
     return (
@@ -176,7 +177,7 @@ const [userLocation, setUserLocation] = useState({ latitude:latitude, longitude:
           style={styles.markerIcon}
         />
   <View style={styles.bgDriver}>
-      <Text style={styles.textDriver}>{driverName}</Text>
+      <Text style={styles.textDriver}>Driver</Text>
     </View>
        
                 </Marker>

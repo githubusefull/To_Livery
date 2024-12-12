@@ -4,6 +4,7 @@ import DriversCard from './DriversCard'
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import useZustand from "../../../../Store/useZustand";
 import Loading from '../Loading/Loading';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 
 
@@ -11,7 +12,7 @@ interface DriverInfo {
   driverId: string;
   name: string;
   mobile: string;
-  location: string;
+  //location: string;
 }
 type RootStackParamList = {
   OrderCard: undefined;
@@ -26,7 +27,7 @@ interface Driver {
   mobile: number;
   role: string;
   location: string;
- 
+
 }
 interface Order {
   _id: string;
@@ -47,7 +48,7 @@ interface ModalComponentProps {
   onClose: () => void;
   selectedOrderId: string | null;
   order: Order;
-  setSelectedOrderId: React.Dispatch<React.SetStateAction<string | null>>;  
+  setSelectedOrderId: React.Dispatch<React.SetStateAction<string | null>>;
 
 }
 
@@ -56,7 +57,7 @@ interface ModalComponentProps {
 
 // Sample order data
 
-const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId, onClose}) => {
+const DriversModal: React.FC<ModalComponentProps> = ({ visible, selectedOrderId, onClose }) => {
 
 
   const {
@@ -75,9 +76,9 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false); 
+      setLoading(false);
     }, 1000);
-    return () => clearTimeout(timer); 
+    return () => clearTimeout(timer);
   }, []);
 
 
@@ -94,7 +95,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
         console.error('Error during order:', error);
         if (error instanceof Error) {
           alert(error.message);
-         
+
         }
       } finally {
         setLoading(false);
@@ -112,12 +113,12 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
 
 
 
-     
+
   const handleSelectDriver = (driver: Driver) => {
     setSelectedDriver(driver);
     setIsModalVisible(true); // Open the modal
 
-  };   
+  };
 
 
 
@@ -125,7 +126,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
 
 
   const handleDriverUpdate = async () => {
-    await fetchUpdatedOrder(); 
+    await fetchUpdatedOrder();
   };
 
 
@@ -133,10 +134,10 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
 
 
   const handleSubmit = async () => {
-    
+
     try {
       const response = await fetch(
-        `https://livery-b.vercel.app/order/create/${selectedOrderId}`, 
+        `https://livery-b.vercel.app/order/create/${selectedOrderId}`,
         {
           method: 'PUT',
           headers: {
@@ -150,7 +151,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
           }),
         }
       );
-  
+
       if (!response.ok) {
         throw new Error(`Failed to update order. Status: ${response.status}`);
       }
@@ -163,7 +164,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
       setIsModalAddriverOpen(false);
       onClose();
 
-     
+
     } catch (error: any) {
       console.error('Error:', error);
       setSnackbarMessage(error.message);
@@ -171,12 +172,12 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
       Alert.alert('Error', 'An error occurred. Please try again.');
     }
   };
-  
- 
 
 
 
- 
+
+
+
 
   if (loading) {
     return <Loading />;
@@ -186,68 +187,67 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible,  selectedOrderId
       visible={visible}
       animationType="slide"
       transparent={true}
-      //onRequestClose={onClose}
+    //onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
 
 
-          <View  style={styles.flatList}>
-          <Text style={styles.buttonText}>Assign Driver</Text>
-        <Modal
-        animationType="slide"
-        transparent
-        visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)} 
-      >
-        <View style={styles.modalOverlayCofirm}>
-          <View style={styles.modalContentConfirm}>
-            <Text style={styles.modalTitle}>Confirm Driver Selection</Text>
-            <Text style={styles.modalMessage}>
-              Are you sure you want to select{' '}
-              <Text style={styles.highlight}>
-                {selectedDriver?.fullname}
-              </Text>
-              ?
-            </Text>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={() => setIsModalVisible(false)} // Cancel action
-              >
-                <Text style={styles.cancelText}>Cancel</Text>
-              </TouchableOpacity>
+          <View style={styles.flatList}>
+            <Text style={styles.buttonText}>Assign Driver</Text>
+            <Modal
+              animationType="slide"
+              transparent
+              visible={isModalVisible}
+              onRequestClose={() => setIsModalVisible(false)}
+            >
+              <View style={styles.modalOverlayCofirm}>
+                <View style={styles.modalContentConfirm}>
+                  <Text style={styles.modalTitle}>Confirm Driver Selection</Text>
+                  <Text style={styles.modalMessage}>
+                    Are you sure you want to select{' '}
+                    <Text style={styles.highlight}>
+                      {selectedDriver?.fullname}
+                    </Text>
+                    ?
+                  </Text>
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity
+                      style={[styles.button, styles.cancelButton]}
+                      onPress={() => setIsModalVisible(false)} // Cancel action
+                    >
+                      <Text style={styles.cancelText}>Cancel</Text>
+                    </TouchableOpacity>
 
 
-              <Pressable style={[styles.button, styles.confirmButton]} onPress={handleSubmit}>
-                <Text style={styles.confirmText}>Yes</Text>
-               
-              </Pressable>
-            </View>
+                    <Pressable style={[styles.button, styles.confirmButton]} onPress={handleSubmit}>
+                      <Text style={styles.confirmText}>Yes</Text>
+
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+            <FlatList
+
+              data={drivers}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item, index) => item.id || String(index)}
+
+              renderItem={({ item }) => <DriversCard driver={item} onPress={handleSelectDriver} />}
+            />
+
+            <Text onPress={() => setIsModalAddriverOpen(false)} style={styles.buttonText}>
+
+              <MaterialIcons name="close" size={28} color="#9c4fd4" /></Text>
+
+
           </View>
-        </View>
-      </Modal>
 
 
 
 
 
-
-
-<FlatList          
-
-  data={drivers}
-  showsVerticalScrollIndicator={false}
-  keyExtractor={(item, index) => item.id || String(index)} 
-
-  renderItem={({ item }) => <DriversCard driver={item} onPress={handleSelectDriver}/>}
-/>
-</View>
-
-
-
-       
-          
         </View>
       </View>
     </Modal>
@@ -260,12 +260,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#007bff',
   },
-    iconClose:{
-  marginTop: 12
-    },
-    flatList: {
-        height: 700
-       },
+  iconClose: {
+    marginTop: 12
+  },
+  flatList: {
+    height: 700
+  },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
@@ -280,20 +280,20 @@ const styles = StyleSheet.create({
     width: 360,
     alignItems: 'center',
   },
-  
 
-  
+
+
   closeButton: {
-    
+
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
     paddingLeft: 10,
     paddingRight: 10,
-    
-    
-    
-    
+
+
+
+
   },
   buttonADriver: {
     color: '#EE5348', // White text
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "700",
     marginTop: 10,
-    textAlign:'center',
+    textAlign: 'center',
     padding: 12
   },
 

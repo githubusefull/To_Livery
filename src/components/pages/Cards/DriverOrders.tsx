@@ -8,6 +8,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../Loading/Loading';
 import useZustand from "../../../../Store/useZustand";
+import DriverOrdersToSee from './DriverOrdersToSee';
 
 
 
@@ -120,7 +121,10 @@ export default function OrderCard() {
 
   const handleLogout = async () => {
     try {
-      setLoading(true);  
+      // Start loading (optional)
+      setLoading(true);
+  
+      // Confirm logout
       Alert.alert(
         'Logout Confirmation',
         'Are you sure you want to log out?',
@@ -134,7 +138,9 @@ export default function OrderCard() {
   
               setIsDropdownOpen(false);
               setSnackbarMessage('Logged out successfully!');
-              setSnackbarVisible(true);  
+              setSnackbarVisible(true);
+  
+              // Navigate to Register screen
               navigation.reset({
                 index: 0,
                 routes: [{ name: 'Register' }],
@@ -210,7 +216,7 @@ export default function OrderCard() {
 
 
 
-        <Text style={styles.navTitle}>Orders</Text>
+        <Text style={styles.navTitle}>Driver Orders</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate("CreateOrderForm")}
           
@@ -229,7 +235,7 @@ export default function OrderCard() {
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => item.id || String(index)}  
             renderItem={({ item }) => 
-            <OrderTosee order={item} key={item.id}  />
+            <DriverOrdersToSee order={item} key={item.id}  />
           
           }
           />

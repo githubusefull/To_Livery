@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RegisterPage from './src/components/pages/Forms/Register/Register';
 import OrderCard from './src/components/pages/Cards/OrderCard';
+import DriverOrders from './src/components/pages/Cards/DriverOrders';
 import NewOrder from './src/components/pages/Cards/CreateOrderForm';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useZustand from './Store/useZustand'; 
@@ -17,6 +18,7 @@ import OrderDetails from './src/components/pages/Cards/OrderDetails';
 type RootStackParamList = {
   Register: undefined;
   OrderCard: undefined;
+  DriverOrders: undefined;
   OrderDetails: { orderId: string }; // Order ID parameter
   CreateOrderForm: undefined;
   Maps: undefined;
@@ -25,6 +27,10 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {
+
+
+
+
   const {
     snackbarVisible,
     snackbarMessage,
@@ -60,8 +66,7 @@ const App: React.FC = () => {
     fetchRoleAndUserId();
   }, [setSnackbarMessage, setSnackbarVisible]);
 
-  console.log('userId:', userId);
-  console.log('role:', role);
+
 
   if (isLoading) {
     // Render the loading screen while loading
@@ -72,6 +77,7 @@ const App: React.FC = () => {
 
     <SafeAreaProvider> 
 
+
     <NavigationContainer>
       <Snackbar
         visible={snackbarVisible}
@@ -81,18 +87,27 @@ const App: React.FC = () => {
       >
         <Text style={styles.snackText}>{snackbarMessage}</Text>
       </Snackbar>
-      <Stack.Navigator initialRouteName="Register">
+
+      <Stack.Navigator initialRouteName={role === 'Driver' ? 'DriverOrders' : 'OrderCard'}>
+
         <Stack.Screen
           name="Register"
           component={RegisterPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="OrderCard"
-          component={OrderCard}
-          options={{ headerShown: false }}
-        />
+          <Stack.Screen
+            name="OrderCard"
+            component={OrderCard}
+            options={{ headerShown: false }}
+          />
+          
 
+          <Stack.Screen
+            name="DriverOrders"
+            component={DriverOrders}
+            options={{ headerShown: false }}
+          />
+ 
          <Stack.Screen name="OrderDetails"
           component={OrderDetails} 
           options={{ headerShown: false }}

@@ -9,9 +9,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from 'jwt-decode'; // Import the jwt-decode library
 import useZustand from "../../../../../Store/useZustand";
 import * as Location from 'expo-location';
+import Zustand from "../../../../../Store/useZustand";
 
 type RootStackParamList = {
   OrderCard: undefined;
+  DriverOrders: undefined;
   Register: undefined;
 };
 
@@ -23,7 +25,8 @@ interface DecodedToken {
   role: string;
 }
 const Register: React.FC = ( ) => {
-   const {setSnackbarVisible, setSnackbarMessage} = useZustand();
+ 
+  const {setSnackbarVisible, setSnackbarMessage} = useZustand();
   const [isLoading, setIsLoading] = useState(true);
 
 
@@ -61,6 +64,8 @@ const Register: React.FC = ( ) => {
   const [address, setAddress] = useState<string>("");
   const [mobile, setMobile] = useState<string>("");
   const [role, setRole] = useState<string>("");
+
+
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
  
 
@@ -116,8 +121,11 @@ const Register: React.FC = ( ) => {
       setSnackbarMessage("Registration successful!");
       setSnackbarVisible(true);
       setIsLoading(true)
-      navigation.navigate('OrderCard');
-    } catch (error: unknown) {
+      if (decodedToken?.role === 'Driver') {
+        navigation.navigate('DriverOrders');  // Redirect to DriverOrders if role is Driver
+      } else {
+        navigation.navigate('OrderCard');    // Redirect to OrderCard for other roles
+      }    } catch (error: unknown) {
       console.error('Error during registration:', error);
       if (error instanceof Error) {
         setSnackbarMessage(error.message);
@@ -181,7 +189,11 @@ const Register: React.FC = ( ) => {
     }
       setEmail('');
       setPassword('');
-      navigation.navigate('OrderCard');
+      if (decodedToken?.role === 'Driver') {
+        navigation.navigate('DriverOrders');  // Redirect to DriverOrders if role is Driver
+      } else {
+        navigation.navigate('OrderCard');    // Redirect to OrderCard for other roles
+      }
       setSnackbarMessage('Login successful!');
       setSnackbarVisible(true);
     } catch (error: unknown) {

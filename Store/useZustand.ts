@@ -1,12 +1,12 @@
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { create } from "zustand";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface DriverInfo {
   driverId: string;
   name: string;
   mobile: string;
 }
+
 interface Order {
   _id: string;
   id: string;
@@ -21,47 +21,70 @@ interface Order {
   driverInfo: DriverInfo[];
 }
 
-
 interface SnackbarState {
   snackbarVisible: boolean;
   snackbarMessage: string;
-  isModalAddriverOpen: boolean; 
-  orders: Order[]; 
-  currentOrder: Order | null; 
-
-  loading: boolean; 
+  isModalAddriverOpen: boolean;
+  orders: Order[];
+  currentOrder: Order | null;
+  loading: boolean;
+  role: string;
+  userId: string;
 
   setSnackbarVisible: (visible: boolean) => void;
   setSnackbarMessage: (message: string) => void;
-  setIsModalAddriverOpen: (open: boolean) => void; 
+  setIsModalAddriverOpen: (open: boolean) => void;
   setOrders: (orders: Order[]) => void;
- 
-  setCurrentOrder: (order: Order | null) => void; 
-
-  setLoading: (loading: boolean) => void; 
+  setCurrentOrder: (order: Order | null) => void;
+  setLoading: (loading: boolean) => void;
+  setRole: (role: string) => void;
+  setUserId: (userId: string) => void;
+  fetchRoleAndUserId: () => Promise<void>;
   fetchUpdatedOrder: () => Promise<void>;
-
-  
 }
 
 const Zustand = create<SnackbarState>((set, get) => ({
   snackbarVisible: false,
   isModalAddriverOpen: false,
   snackbarMessage: "",
+  orders: [],
+  currentOrder: null,
+  loading: false,
+  role: "",
+  userId: "",
+
   setSnackbarVisible: (visible) => set({ snackbarVisible: visible }),
   setSnackbarMessage: (message) => set({ snackbarMessage: message }),
-  setIsModalAddriverOpen: (open) => set({ isModalAddriverOpen: open }), 
+  setIsModalAddriverOpen: (open) => set({ isModalAddriverOpen: open }),
+  setOrders: (orders) => set({ orders }),
+  setCurrentOrder: (order) => set({ currentOrder: order }),
+  setLoading: (loading) => set({ loading }),
+  setRole: (role) => set({ role }),
+  setUserId: (userId) => set({ userId }),
 
-  orders: [], 
-  loading: false, 
-  currentOrder: null, 
-  setOrders: (orders) => set({ orders }), 
-  setCurrentOrder: (order) => set({ currentOrder: order }), 
-  setLoading: (loading) => set({ loading }), 
-
+  fetchRoleAndUserId: async () => {
+    try {
+      const userData = await AsyncStorage.getItem("userData");
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+        set({
+          role: parsedData.role || "",
+          userId: parsedData._id || "",
+        });
+      }
+    } catch (error) {
+      console.error("Error retrieving data from AsyncStorage:", error);
+      set({
+        snackbarMessage: "Error retrieving user data",
+        snackbarVisible: true,
+      });
+    } finally {
+      set({ loading: false });
+    }
+  },
 
   fetchUpdatedOrder: async () => {
-    const currentOrder = get().currentOrder; // Accessing state with get()
+    const currentOrder = get().currentOrder;
     if (!currentOrder) {
       console.error("No current order to fetch.");
       return;
@@ -98,8 +121,6 @@ const Zustand = create<SnackbarState>((set, get) => ({
       set({ loading: false });
     }
   },
-
-
 }));
 
 export default Zustand;

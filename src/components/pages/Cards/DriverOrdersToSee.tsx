@@ -48,7 +48,7 @@ type RootStackParamList = {
   OrderDetails: { orderId: string };
 };
 
-const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
+const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
 
   const {
     isModalAddriverOpen,
@@ -142,20 +142,12 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
   
 
 
-
-
   const handleCallPress = () => {
-    if (currentOrder.driverInfo && currentOrder.driverInfo.length > 0) {
-      const driverMobile = currentOrder.driverInfo[0].mobile; // Assuming you want the first driver's number
-      const phoneNumber = `tel:${driverMobile}`;
-      Linking.openURL(phoneNumber).catch(err =>
-        console.error('Failed to open dialer:', err)
-      );
-    } else {
-      console.error('No driver information available');
-    }
+    const phoneNumber = `tel:${currentOrder.mobile}`;
+    Linking.openURL(phoneNumber).catch(err => 
+      console.error('Failed to open dialer:', err)
+    );
   };
-  
   return (
     <TouchableOpacity style={styles.card} onPress={handleViewDetails}>
       <View style={styles.header}>
@@ -166,7 +158,13 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
         {currentOrder.driverInfo && currentOrder.driverInfo.length > 0 ? (
           currentOrder.driverInfo.map((driver, index) => (
             <View style={styles.edit} key={index}>
+
              <Text   style={styles.driverName}>{driver.name}</Text>
+
+
+
+         
+
             </View>
 
           ))
@@ -302,4 +300,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default OrderToSee;
+export default DriverOrdersToSee;
