@@ -1,4 +1,4 @@
-import React, {  useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Pressable, Linking, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you install `@expo/vector-icons`
 import DriversModal from '../Modals/DriversModal';
@@ -36,7 +36,7 @@ interface Driver {
   address: string;
   mobile: number;
   role: string;
- 
+
 }
 
 interface OrderCardProps {
@@ -52,8 +52,7 @@ type RootStackParamList = {
 const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
 
   const {
-    isModalAddriverOpen,
-    setIsModalAddriverOpen,
+
     loading,
     setLoading,
     setSnackbarMessage,
@@ -71,10 +70,12 @@ const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
     switch (status.toLowerCase()) {
       case 'pending':
         return 'orange';
-      case 'in transit':
-        return '#28a745';
-      case 'delivered':
+      case 'processing':
         return '#007bff';
+      case 'refused':
+        return '#f96565';
+      case 'delivered':
+        return '#16a34a';
       default:
         return 'gray';
     }
@@ -82,109 +83,129 @@ const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
 
 
 
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [currentOrder, setCurrentOrder] = useState<Order>(order)
-
-
-
-
-
-  const handleOpenModal = (id: string) => {
-    setSelectedOrderId(id);
-    setIsModalAddriverOpen(true);
-  };
-
-
-
-  
-
-  
   const fetchUpdatedOrder = async (): Promise<void> => {
     try {
       const response = await fetch(
         `https://livery-b.vercel.app/order/create/${order._id}`
       );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Non-OK Response:", errorText);
-        throw new Error(
-          `Error fetching order: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const contentType = response.headers.get("Content-Type");
-      if (!contentType || !contentType.includes("application/json")) {
-        console.error("Unexpected content type:", contentType);
-        throw new Error("Response is not JSON.");
-      }
+      if (!response.ok) throw new Error("Error fetching updated order");
 
       const updatedOrder: Order = await response.json();
-      console.log("Fetched Updated Order:", updatedOrder);
       setCurrentOrder(updatedOrder);
     } catch (error) {
       console.error("Error fetching updated order:", error);
     }
   };
 
-
-
-  const handleDriverUpdate = async () => {
-    await fetchUpdatedOrder(); 
-  };
-
   useEffect(() => {
-    console.log(currentOrder.driverInfo, 'driver info..')
+    // Poll for updates every 5 seconds
+    const intervalId = setInterval(() => {
+      fetchUpdatedOrder();
+    }, 5000);
 
-  }, [currentOrder.driverInfo]);
-  
+    // Cleanup the interval when component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
 
 
   const handleCallPress = () => {
     const phoneNumber = `tel:${currentOrder.mobile}`;
-    Linking.openURL(phoneNumber).catch(err => 
+    Linking.openURL(phoneNumber).catch(err =>
       console.error('Failed to open dialer:', err)
     );
   };
 
 
 
-  const handleStatusUpdate = async (): Promise<void> => {
+
+
+  const handleStatusRefuse = async (): Promise<void> => {
     setLoading(true);
     try {
-      const response = await fetch('https://livery-b.vercel.app/order/create', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId: currentOrder._id,
-          newStatus: 'Accepted',
-        }),
-      });
+      const response = await fetch(
+        `https://livery-b.vercel.app/order/status/${currentOrder._id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'Refused' }),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Failed to update status:', errorText);
+        setSnackbarMessage(errorText);
+        setSnackbarVisible(true);
         throw new Error('Error updating order status');
       }
 
-      const updatedOrder: Order = await response.json();
-      console.log('Order updated successfully:', updatedOrder);
-      setCurrentOrder(updatedOrder);
+      const data = await response.json();
+      setCurrentOrder((prevOrder) => ({
+        ...prevOrder,
+        status: data.data.status, // Assuming the backend returns the updated status
+      }));
 
-      // Optional: Alert the user
-      Alert.alert('Success', 'Order status updated to Accepted');
+      setSnackbarMessage('Order status updated to Refuse');
+      setSnackbarVisible(true);
+
     } catch (error) {
       console.error('Error:', error);
-      Alert.alert('Error', 'Failed to update order status');
+      setSnackbarMessage('Failed to update order status');
+      setSnackbarVisible(true);
+
     } finally {
       setLoading(false);
     }
   };
 
-    
-  
+
+  const handleStatusProcess = async (): Promise<void> => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://livery-b.vercel.app/order/status/${currentOrder._id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'Processing' }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Failed to update status:', errorText);
+        setSnackbarMessage(errorText);
+        setSnackbarVisible(true);
+        throw new Error('Error updating order status');
+      }
+
+      const data = await response.json();
+      setCurrentOrder((prevOrder) => ({
+        ...prevOrder,
+        status: data.data.status, // Assuming the backend returns the updated status
+      }));
+
+      setSnackbarMessage('Order status updated to Accepted');
+      setSnackbarVisible(true);
+    } catch (error) {
+      console.error('Error:', error);
+      setSnackbarMessage('Eroor');
+      setSnackbarVisible(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
   if (loading) {
     return <Loading />;
   }
@@ -192,49 +213,25 @@ const DriverOrdersToSee: React.FC<OrderCardProps> = ({ order }) => {
     <TouchableOpacity style={styles.card} onPress={handleViewDetails}>
       <View style={styles.header}>
         <Text style={[styles.status, { color: getStatusColor(currentOrder.status) }]}>
-          {currentOrder.status} 
+          {currentOrder.status}
         </Text>
 
-        {currentOrder.driverInfo && currentOrder.driverInfo.length > 0 ? (
-          currentOrder.driverInfo.map((driver, index) => (
-            <View style={styles.edit} key={index}>
+       
+          <View style={styles.container}>
 
-             <Text   style={styles.driverName}>{driver.name}</Text>
+            <View style={styles.buTTon}>
+              <Pressable style={styles.addDriver} onPress={handleStatusProcess}>
+                <Text style={styles.buttonText} >Accepted</Text>
+              </Pressable>
 
-
-
-         
+              <Pressable style={styles.addDriverRefuse} onPress={handleStatusRefuse}>
+                <Text style={styles.buttonTextRefuse}>Refuse</Text>
+              </Pressable>
 
             </View>
 
-          ))
-        ) : (
-          <View style={styles.container}>
-
-<View style={styles.buTTon}>
-   <Pressable style={styles.addDriver} onPress={handleStatusUpdate}>
-              <Text style={styles.buttonText} >Accepted</Text>
-            </Pressable>
-            
-            <Pressable style={styles.addDriverRefuse} onPress={() => handleOpenModal(currentOrder._id)}>
-              <Text style={styles.buttonTextRefuse}>Refuse</Text>
-            </Pressable>
-
-  </View>
- 
-            
-
-            {selectedOrderId === currentOrder._id && (
-              <DriversModal visible={isModalAddriverOpen} 
-              onClose={handleDriverUpdate} 
-              order={order}
-              selectedOrderId={selectedOrderId} setSelectedOrderId={setSelectedOrderId} />
-      
-            )}
-
-
           </View>
-        )}
+        
 
 
 
@@ -259,7 +256,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
   },
-  
+
   card: {
     backgroundColor: '#fff',
     borderRadius: 5,
@@ -276,21 +273,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
-    padding: 5,
+    marginBottom: 8,
+    padding: 3,
   },
   phone: {},
   status: {
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: '600',
+    backgroundColor: '#E0E0E0',
+    paddingLeft: 5,
+    paddingRight: 5,
+    borderRadius: 4,
+    padding: 4,
+    fontSize: 12,
   },
   buTTon: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
-    gap: 6
-    },
+    gap: 6,
+    
+
+  },
   addDriver: {
     padding: 4,
     backgroundColor: '#9c4fd4',
@@ -308,7 +312,7 @@ const styles = StyleSheet.create({
 
   addDriverRefuse: {
     padding: 4,
-    backgroundColor: '#2323',
+    backgroundColor: '#E0E0E0',
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
@@ -367,7 +371,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  gap: 4  },
+    gap: 4
+  },
   driverUpdate: {
     marginLeft: 20
   }

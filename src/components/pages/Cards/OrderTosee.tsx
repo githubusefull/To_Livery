@@ -4,6 +4,7 @@ import { FontAwesome } from '@expo/vector-icons'; // For phone icon, ensure you 
 import DriversModal from '../Modals/DriversModal';
 import useZustand from "../../../../Store/useZustand";
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import Loading from '../Loading/Loading';
 
 
 interface DriverInfo {
@@ -52,7 +53,11 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
 
   const {
     isModalAddriverOpen,
-    setIsModalAddriverOpen
+    setIsModalAddriverOpen,
+    loading,
+    setLoading,
+    setSnackbarMessage,
+    setSnackbarVisible
   } = useZustand();
 
 
@@ -64,18 +69,18 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
 
   const getStatusColor = (status: string): string => {
     switch (status.toLowerCase()) {
-      case 'Pending':
+      case 'pending':
         return 'orange';
-      case 'In transit':
-        return '#28a745';
-      case 'Delivered':
+      case 'processing':
         return '#007bff';
-   
+      case 'refused':
+        return '#f96565';
+      case 'delivered':
+        return '#16a34a';
       default:
         return 'gray';
     }
   };
-
 
 
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -145,6 +150,61 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
     }
   };
 
+
+  const handleStatusDelivered = async (): Promise<void> => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://livery-b.vercel.app/order/status/${currentOrder._id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'Processing' }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Failed to update status:', errorText);
+        setSnackbarMessage(errorText);
+        setSnackbarVisible(true);
+        throw new Error('Error updating order status');
+      }
+
+      const data = await response.json();
+      setCurrentOrder((prevOrder) => ({
+        ...prevOrder,
+        status: data.data.status, // Assuming the backend returns the updated status
+      }));
+
+      setSnackbarMessage('Order status updated to Accepted');
+      setSnackbarVisible(true);
+    } catch (error) {
+      console.error('Error:', error);
+      setSnackbarMessage('Eroor');
+      setSnackbarVisible(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Poll for updates every 5 seconds
+    const intervalId = setInterval(() => {
+      fetchUpdatedOrder();
+    }, 5000);
+
+    // Cleanup the interval when component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <TouchableOpacity style={styles.card} onPress={handleViewDetails}>
       <View style={styles.header}>
@@ -155,7 +215,10 @@ const OrderToSee: React.FC<OrderCardProps> = ({ order }) => {
         {currentOrder.driverInfo && currentOrder.driverInfo.length > 0 ? (
           currentOrder.driverInfo.map((driver, index) => (
             <View style={styles.edit} key={index}>
-              <Text style={styles.driverName}>{driver.name}</Text>
+              <Text style={styles.driverName}>
+                  <Text style={styles.driver}>Driver : </Text>
+                  {driver.name}
+                  </Text>
             </View>
 
           ))
@@ -222,8 +285,13 @@ const styles = StyleSheet.create({
   },
   phone: {},
   status: {
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: '600',
+    backgroundColor:'#E0E0E0',
+    paddingLeft: 5,
+    paddingRight: 5,
+    borderRadius: 4,
+    padding: 3,
+    fontSize: 12,
   },
   addDriver: {
     padding: 4,
@@ -237,6 +305,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#DAF7A6',
     fontSize: 12,
+    fontWeight: '500',
+  },
+  driver: {
+    fontSize: 14,
+    color: '#2323',
     fontWeight: '500',
   },
   driverName: {

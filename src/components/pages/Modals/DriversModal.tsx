@@ -125,10 +125,7 @@ const DriversModal: React.FC<ModalComponentProps> = ({ visible, selectedOrderId,
 
 
 
-  const handleDriverUpdate = async () => {
-    await fetchUpdatedOrder();
-  };
-
+  
 
 
 

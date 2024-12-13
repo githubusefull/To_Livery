@@ -239,7 +239,7 @@ export default function OrderCard() {
         <View  style={styles.flatList}>
 
           <FlatList
-            data={orders.filter(order => order.userId === userId)}
+            data={orders.filter(order => order.driverInfo.some(driver => driver.driverId === userId))}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item, index) => item.id || String(index)}  
             renderItem={({ item }) => 
